@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Survey map 2024</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <style>
+        #map { height: 900px; }
+        #error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>Bản đồ khảo sát CSKVTT</h1>
+    <div id="error"></div>
+    <div id="map"></div>
+    <script>
+        function initializeMap() {
+            var map = L.map('map').setView([0, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            return map;
+        }
+
+        function processFile(file, map) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var data = new Uint8Array(e.target.result);
+                    var workbook = XLSX.read(data, {type: 'array'});
+                    var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    var jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+                    addMarkersToMap(jsonData, map);
+                } catch (error) {
+                    displayError('Error processing file: ' + error.message);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function addMarkersToMap(data, map) {
+            var lastLat, lastLon;
+            data.forEach(function(row) {
+                var lat = row[0];
+                var lon = row[1];
+                var name = row[2];
+                if (!isNaN(lat) && !isNaN(lon)) {
+                    lastLat = lat;
+                    lastLon = lon;
+                    var marker = L.marker([lat, lon], {icon: customIcon}).addTo(map);
+                    if (name) {
+                        var label = L.divIcon({
+                            className: 'custom-label',
+                            html: `<div>${name}</div>`,
+                            iconSize: [100, 20],
+                            iconAnchor: [15, 25]
+                        });
+                        L.marker([lat, lon], {icon: label}).addTo(map);
+                    }
+                }
+            });
+            if (lastLat !== undefined && lastLon !== undefined) {
+                map.setView([lastLat, lastLon], 20);
+            }
+        }
+
+        function displayError(message) {
+            document.getElementById('error').textContent = message;
+        }
+
+        function loadDefaultFile(map) {
+            fetch('data.xlsx')
+                .then(response => response.blob())
+                .then(blob => {
+                    var file = new File([blob], 'data.xlsx');
+                    processFile(file, map);
+                })
+                .catch(error => displayError('Error loading default file: ' + error.message ));
+        }
+
+        var map = initializeMap();
+
+        var customIcon = L.icon({
+            iconUrl: 'den2.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+        });
+
+        // Load the default file when the page loads
+        window.onload = function() {
+            loadDefaultFile(map);
+        };
+    </script>
+</body>
+</html>
