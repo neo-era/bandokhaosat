@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
     <!-- site metas -->
-    <title>Gravitao</title>
+    
     <meta name="keywords" content="">
     <meta name="description" content="">
     <meta name="author" content="Mai Vũ Lâm">
@@ -34,6 +34,14 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+ <!-- cluster --> 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
     <style>
         #map { height: 700px; }
         #error { color: red; display: none; }
@@ -157,10 +165,13 @@
         function addMarkersToMap(data, map) {
             var lastLat, lastLon;
             data.forEach(function(row) {
-                var lat = row[0];
-                var lon = row[1];
-                var name = row[2];
-                var type= row[3];
+                var lat = row[0];//Lat
+                var lon = row[1];//long
+                var name = row[2];//name
+                var type= row[3];//trang thai
+                var loaitru= row[4]; // Loại trụ
+                var loaican = row[5]; // loai can
+                var loaiden = row[6]; // Loại trụ
                 var icon;
     switch (type) {
     case 0:
@@ -189,10 +200,13 @@
 }
 
 
-                if (!isNaN(lat) && !isNaN(lon)) {
+if (!isNaN(lat) && !isNaN(lon)) {
                     lastLat = lat;
                     lastLon = lon;
                     var marker = L.marker([lat, lon], {icon: icon}).addTo(map);
+                    var popupContent = `<div><strong> Ten tru: ${name}</strong></div><div> Lat: ${lat}</div>
+                    </div><div> Lat: ${lon}</div></div><div> Tru: ${loaitru}</div></div><div> Can: ${loaican}</div>
+                    </div><div> Den: ${loaiden}</div>`;
                     markers.push({lat: lat, lon: lon, name: name, marker: marker});
                     if (name) {
                         var label = L.divIcon({
@@ -201,6 +215,7 @@
                             iconSize: [100, 20],
                             iconAnchor: [15, 25]
                         });
+                        marker.bindPopup(popupContent);
                         L.marker([lat, lon], {icon: label}).addTo(map);
                     }
                 }
@@ -266,10 +281,10 @@ function centerOnUserLocation() {
             }
         }
         function loadDefaultFile(map) {
-            fetch('data/data.xlsx')
+            fetch('data/khaosat.xlsx')
                 .then(response => response.blob())
                 .then(blob => {
-                    var file = new File([blob], 'data/data.xlsx');
+                    var file = new File([blob], 'data/khaosat.xlsx');
                     processFile(file, map);
                 })
                 .catch(error => displayError('Error loading default file: ' + error.message));

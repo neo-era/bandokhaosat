@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
     <!-- site metas -->
-    <title>Gravitao</title>
+    
     <meta name="keywords" content="">
     <meta name="description" content="">
     <meta name="author" content="Mai Vũ Lâm">
@@ -34,6 +34,14 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+ <!-- cluster --> 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
     <style>
         #map { height: 700px; }
         #error { color: red; display: none; }
@@ -41,15 +49,15 @@
     </style>
 </head>
 <body>
-    <h1>Bản đồ khảo sát hệ thống Chiếu sáng Khu vực Trung Tâm - Khu vực Quận 8</h1>
+    <h1>Bản đồ khảo sát hệ thống Chiếu sáng Khu vực Trung Tâm</h1>
     <div id="pageSelector">
         <label for="pages">Chọn Quận:</label>
         <select id="pages" onchange="navigateToPage()">
-            <option value="quan8.html">Quận 8</option>
+            
             <option value="quan1.html">Quận 1</option>
             <option value="quan3.html">Quận 3</option>
             <option value="quan5.html">Quận 5</option>
-           
+            <option value="quan8.html">Quận 8</option>
             <option value="quan10.html">Quận 10</option>
             <option value="quan11.html">Quận 11</option>
             <option value="quanpn.html">Quận Phú Nhuận</option>
@@ -59,6 +67,7 @@
         <id="searchContainer">
         <input type="text" id="searchInput" placeholder="Nhập tên hoặc tọa độ (lat, lon)" />
         <button onclick="searchMarkers()">Tìm kiếm</button>
+        <button onclick="centerOnUserLocation()">Center on My Location</button>
     </div>
     <div id="error"></div>
     <div id="map"></div>
@@ -123,7 +132,7 @@
             
         });
         var customIcon8 = L.icon({
-            iconUrl: 'images/8.png', // Ensure this path is correct
+            iconUrl: 'images/8.png', // vi tri hien tai
             iconSize: [10, 10],
             iconAnchor: [5, 5],
             popupAnchor: [0, -10]
@@ -161,6 +170,7 @@
                 var lon = row[1];
                 var name = row[2];
                 var type= row[3];
+                var url = row[4]; // Assuming the URL is in the fifth column
                 var icon;
     switch (type) {
     case 0:
@@ -189,7 +199,7 @@
 }
 
 
-                if (!isNaN(lat) && !isNaN(lon)) {
+if (!isNaN(lat) && !isNaN(lon)) {
                     lastLat = lat;
                     lastLon = lon;
                     var marker = L.marker([lat, lon], {icon: icon}).addTo(map);
@@ -211,10 +221,10 @@
         }
 
         function navigateToPage() {
-    var select = document.getElementById("pages");
-    var selectedPage = select.value;
-    window.location.href = selectedPage;
-}
+                var select = document.getElementById("pages");
+                var selectedPage = select.value;
+                 window.location.href = selectedPage;
+                                    }
         function searchMarkers() {
             var input = document.getElementById('searchInput').value.toLowerCase();
             var found = false;
@@ -248,7 +258,23 @@
                 errorDiv.style.display = 'none';
             }
         }
-
+// Dịnh vị
+function centerOnUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+                    map.setView([lat, lon], 20);
+                    L.marker([lat, lon], {icon: customIcon8}).addTo(map)
+                        .bindPopup('You are here!')
+                        .openPopup();
+                }, function(error) {
+                    displayError('Unable to retrieve your location: ' + error.message);
+                });
+            } else {
+                displayError('Geolocation is not supported by your browser.');
+            }
+        }
         function loadDefaultFile(map) {
             fetch('data/quan8.xlsx')
                 .then(response => response.blob())
@@ -263,7 +289,8 @@
         window.onload = function() {
             loadDefaultFile(map);
         };
-    </script>
+   
+   </script>
 </body>
 </html>
 
