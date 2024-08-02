@@ -31,16 +31,11 @@
     <link rel="stylesheet" href="css/owl.carousel.min.css">
     <link rel="stylesheet" href="css/owl.theme.default.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
-
-
-
-
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
-        #map { height: 600px; }
+        #map { height: 700px; }
         #error { color: red; display: none; }
         #searchContainer { margin: 10px 0; }
     </style>
@@ -60,7 +55,7 @@
             <option value="quanpn.html">Quận Phú Nhuận</option>
             <option value="quanbt.html">Quận Bình Thạnh</option>
         </select>
-       <id="searchContainer">
+        <id="searchContainer">
         <input type="text" id="searchInput" placeholder="Nhập tên hoặc tọa độ (lat, lon)" />
         <button onclick="searchMarkers()">Tìm kiếm</button>
     </div>
@@ -68,19 +63,70 @@
     <div id="map"></div>
  <!-- copyright section start -->
  <div class="copyright_section">
-    <p class="copyright_text">Copyright 8/2024 All Right Reserved By.<a href =""> CSKVTT</p>
-</div>
+    <p class="copyright_text">Copyright 8/2024 All Right Reserved By.<a href ="wwww.lavipco.tech" target="_blank"> CSKVTT  </a>    <img src="images/email-icon.png"><span class="map_icon">chieusangkhuvuctrungtam@gmail.com</span></p>
+</div>  <a href="https://www.example.com" target="_blank">Visit Example.com</a>
+
 <!-- copyright section end -->
   
 
    <script>
         var map = initializeMap();
         var markers = [];
-        var customIcon = L.icon({
-            iconUrl: 'images/den2.png', // Ensure this path is correct
+        var customIcon1 = L.icon({
+            iconUrl: 'images/1.png', // Ensure this path is correct
             iconSize: [10, 10],
             iconAnchor: [5, 5],
             popupAnchor: [0, -10]
+            
+        });
+        var customIcon2 = L.icon({
+            iconUrl: 'images/2.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
+        }); 
+        var customIcon3 = L.icon({
+            iconUrl: 'images/3.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
+        });
+        var customIcon4 = L.icon({
+            iconUrl: 'images/4.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
+        });
+        var customIcon5 = L.icon({
+            iconUrl: 'images/5.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
+        });
+        var customIcon6 = L.icon({
+            iconUrl: 'images/6.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
+        });
+        var customIcon7 = L.icon({
+            iconUrl: 'images/7.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
+        });
+        var customIcon8 = L.icon({
+            iconUrl: 'images/8.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
         });
 
         function initializeMap() {
@@ -113,10 +159,39 @@
                 var lat = row[0];
                 var lon = row[1];
                 var name = row[2];
+                var type= row[3];
+                var icon;
+    switch (type) {
+    case 0:
+        icon = customIcon1;
+        break;
+    case 1:
+        icon = customIcon2;
+        break;
+    case 2:
+        icon = customIcon3;
+        break;
+    case 3:
+        icon = customIcon4;
+        break;
+    case 4:
+        icon = customIcon5;
+        break;
+    case 5:
+        icon = customIcon6;
+        break;
+    case 6:
+        icon = customIcon7;
+        break;
+    default:
+        icon = customIcon8; // Fallback icon
+}
+
+
                 if (!isNaN(lat) && !isNaN(lon)) {
                     lastLat = lat;
                     lastLon = lon;
-                    var marker = L.marker([lat, lon], {icon: customIcon}).addTo(map);
+                    var marker = L.marker([lat, lon], {icon: icon}).addTo(map);
                     markers.push({lat: lat, lon: lon, name: name, marker: marker});
                     if (name) {
                         var label = L.divIcon({
