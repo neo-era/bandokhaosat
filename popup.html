@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Map with Points from Excel</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <style>
+        #map { height: 600px; }
+    </style>
+</head>
+<body>
+    <h1>Map with Points from Excel</h1>
+    <input type="file" id="fileInput" />
+    <div id="map"></div>
+    <script>
+        var map = L.map('map').setView([0, 0], 2);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var customIcon = L.icon({
+            iconUrl: 'den2.png', // Đường dẫn tới file icon của bạn
+            iconSize: [10, 10], // Kích thước của icon
+            iconAnchor: [5, 5], // Điểm neo của icon (giữa đáy icon)
+            popupAnchor: [0, -10] // Điểm neo của popup (trên icon)
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var data = new Uint8Array(e.target.result);
+                var workbook = XLSX.read(data, {type: 'array'});
+                var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                var jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
+
+                var lastLat, lastLon;
+                jsonData.forEach(function(row) {
+                    var lat = row[0];
+                    var lon = row[1];
+                    var name = row[2];
+                    if (!isNaN(lat) && !isNaN(lon)) {
+                        lastLat = lat;
+                        lastLon = lon;
+                        var marker = L.marker([lat, lon], {icon: customIcon}).addTo(map);
+                        if (name) {
+                            var label = L.divIcon({
+                                className: 'custom-label',
+                                html: `<div>${name}</div>`,
+                                iconSize: [100, 20],
+                                iconAnchor: [15, 25]
+                            });
+                            L.marker([lat, lon], {icon: label}).addTo(map);
+                        }
+                    }
+                });
+
+                if (lastLat !== undefined && lastLon !== undefined) {
+                    map.setView([lastLat, lastLon], 20); // Zoom to the last point with a wider view
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+    </script>
+</body>
+</html>
