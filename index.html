@@ -58,6 +58,7 @@
         <id="searchContainer">
         <input type="text" id="searchInput" placeholder="Nhập tên hoặc tọa độ (lat, lon)" />
         <button onclick="searchMarkers()">Tìm kiếm</button>
+        <button onclick="centerOnUserLocation()">Center on My Location</button>
     </div>
     <div id="error"></div>
     <div id="map"></div>
@@ -108,9 +109,9 @@
             
         });
         var customIcon6 = L.icon({
-            iconUrl: 'images/6.png', // Ensure this path is correct
-            iconSize: [10, 10],
-            iconAnchor: [5, 5],
+            iconUrl: 'images/9.png', // Ensure this path is correct
+            iconSize: [16, 20],
+            iconAnchor: [8, 10],
             popupAnchor: [0, -10]
             
         });
@@ -210,10 +211,10 @@
         }
 
         function navigateToPage() {
-    var select = document.getElementById("pages");
-    var selectedPage = select.value;
-    window.location.href = selectedPage;
-}
+                var select = document.getElementById("pages");
+                var selectedPage = select.value;
+                 window.location.href = selectedPage;
+                                    }
         function searchMarkers() {
             var input = document.getElementById('searchInput').value.toLowerCase();
             var found = false;
@@ -247,7 +248,23 @@
                 errorDiv.style.display = 'none';
             }
         }
-
+// Dịnh vị
+function centerOnUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+                    map.setView([lat, lon], 15);
+                    L.marker([lat, lon], {icon: customIcon}).addTo(map)
+                        .bindPopup('You are here!')
+                        .openPopup();
+                }, function(error) {
+                    displayError('Unable to retrieve your location: ' + error.message);
+                });
+            } else {
+                displayError('Geolocation is not supported by your browser.');
+            }
+        }
         function loadDefaultFile(map) {
             fetch('data/data.xlsx')
                 .then(response => response.blob())
@@ -262,7 +279,8 @@
         window.onload = function() {
             loadDefaultFile(map);
         };
-    </script>
+   
+   </script>
 </body>
 </html>
 
