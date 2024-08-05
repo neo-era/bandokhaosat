@@ -11,7 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
     <!-- site metas -->
-    
+    <title>Gravitao</title>
     <meta name="keywords" content="">
     <meta name="description" content="">
     <meta name="author" content="Mai Vũ Lâm">
@@ -34,14 +34,6 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
- <!-- cluster --> 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-
     <style>
         #map { height: 700px; }
         #error { color: red; display: none; }
@@ -63,7 +55,7 @@
             <option value="quanpn.html">Quận Phú Nhuận</option>
             <option value="quanbt.html">Quận Bình Thạnh</option>
         </select>
-        <id="searchContainer">
+       <id="searchContainer">
         <input type="text" id="searchInput" placeholder="Nhập tên hoặc tọa độ (lat, lon)" />
         <button onclick="searchMarkers()">Tìm kiếm</button>
         <button onclick="centerOnUserLocation()">Center on My Location</button>
@@ -72,46 +64,44 @@
     <div id="map"></div>
  <!-- copyright section start -->
  <div class="copyright_section">
-    <p class="copyright_text">Copyright 8/2024 All Right Reserved By.<a href ="wwww.lavipco.tech" target="_blank"> CSKVTT  </a>    <img src="images/email-icon.png"><span class="map_icon">chieusangkhuvuctrungtam@gmail.com</span></p>
-</div>  <a href="https://www.example.com" target="_blank">Visit Example.com</a>
-
+    <p class="copyright_text">Copyright 8/2024 All Right Reserved By:<a href =""> CSKVTT    Email: cskvtt.bando@gmail.com</p>
+</div>
 <!-- copyright section end -->
   
-
    <script>
         var map = initializeMap();
         var markers = [];
         var customIcon1 = L.icon({
             iconUrl: 'images/1.png', // Ensure this path is correct
-            iconSize: [10, 10],
+            iconSize: [13, 13],
             iconAnchor: [5, 5],
             popupAnchor: [0, -10]
             
         });
         var customIcon2 = L.icon({
             iconUrl: 'images/2.png', // Ensure this path is correct
-            iconSize: [10, 10],
+            iconSize: [13, 13],
             iconAnchor: [5, 5],
             popupAnchor: [0, -10]
             
         }); 
         var customIcon3 = L.icon({
             iconUrl: 'images/3.png', // Ensure this path is correct
-            iconSize: [10, 10],
+            iconSize: [13, 13],
             iconAnchor: [5, 5],
             popupAnchor: [0, -10]
             
         });
         var customIcon4 = L.icon({
             iconUrl: 'images/4.png', // Ensure this path is correct
-            iconSize: [10, 10],
+            iconSize: [13, 13],
             iconAnchor: [5, 5],
             popupAnchor: [0, -10]
             
         });
         var customIcon5 = L.icon({
             iconUrl: 'images/5.png', // Ensure this path is correct
-            iconSize: [10, 10],
+            iconSize: [13, 13],
             iconAnchor: [5, 5],
             popupAnchor: [0, -10]
             
@@ -125,14 +115,14 @@
         });
         var customIcon7 = L.icon({
             iconUrl: 'images/7.png', // Ensure this path is correct
-            iconSize: [10, 10],
+            iconSize: [13, 13],
             iconAnchor: [5, 5],
             popupAnchor: [0, -10]
             
         });
         var customIcon8 = L.icon({
             iconUrl: 'images/8.png', // vi tri hien tai
-            iconSize: [10, 10],
+            iconSize: [13, 13],
             iconAnchor: [5, 5],
             popupAnchor: [0, -10]
             
@@ -154,7 +144,7 @@
                     var workbook = XLSX.read(data, {type: 'array'});
                     var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                     var jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1});
-                    addMarkersToMap(jsonData, map);
+                    addMarkersToMap1(jsonData, map);
                 } catch (error) {
                     displayError('Error processing file: ' + error.message);
                 }
@@ -165,48 +155,20 @@
         function addMarkersToMap(data, map) {
             var lastLat, lastLon;
             data.forEach(function(row) {
-                var lat = row[0];//Lat
-                var lon = row[1];//long
-                var name = row[2];//name
-                var type= row[3];//trang thai
-                var loaitru= row[4]; // Loại trụ
-                var loaican = row[5]; // loai can
-                var loaiden = row[6]; // Loại trụ
-                var icon;
-    switch (type) {
-    case 0:
-        icon = customIcon1;
-        break;
-    case 1:
-        icon = customIcon2;
-        break;
-    case 2:
-        icon = customIcon3;
-        break;
-    case 3:
-        icon = customIcon4;
-        break;
-    case 4:
-        icon = customIcon5;
-        break;
-    case 5:
-        icon = customIcon6;
-        break;
-    case 6:
-        icon = customIcon7;
-        break;
-    default:
-        icon = customIcon8; // Fallback icon
-}
-
-
-if (!isNaN(lat) && !isNaN(lon)) {
+                var lat = row[0];
+                var lon = row[1];
+                var name = row[2];
+                if (!isNaN(lat) && !isNaN(lon)) {
                     lastLat = lat;
                     lastLon = lon;
                     var marker = L.marker([lat, lon], {icon: icon}).addTo(map);
-                    var popupContent = `<div><strong> Ten tru: ${name}</strong></div><div> Lat: ${lat}</div>
-                    </div><div> Lat: ${lon}</div></div><div> Tru: ${loaitru}</div></div><div> Can: ${loaican}</div>
-                    </div><div> Den: ${loaiden}</div>`;
+                    var popupContent = 
+                    `<div>
+                    <strong>Tên trụ: ${name}</strong>
+                    </div>
+                    <div>Lat: ${lat}</div>
+                    <div>Lon: ${lon}</div>`;
+                    marker.bindPopup(popupContent);
                     markers.push({lat: lat, lon: lon, name: name, marker: marker});
                     if (name) {
                         var label = L.divIcon({
@@ -215,7 +177,6 @@ if (!isNaN(lat) && !isNaN(lon)) {
                             iconSize: [100, 20],
                             iconAnchor: [15, 25]
                         });
-                        marker.bindPopup(popupContent);
                         L.marker([lat, lon], {icon: label}).addTo(map);
                     }
                 }
@@ -224,12 +185,89 @@ if (!isNaN(lat) && !isNaN(lon)) {
                 map.setView([lastLat, lastLon], 20);
             }
         }
-
+//------------------------------
         function navigateToPage() {
-                var select = document.getElementById("pages");
-                var selectedPage = select.value;
-                 window.location.href = selectedPage;
-                                    }
+    var select = document.getElementById("pages");
+    var selectedPage = select.value;
+    window.location.href = selectedPage;
+}
+//--------------------------------------
+function addMarkersToMap1(data, map) {
+            var lastLat, lastLon;
+            data.forEach(function(row) {
+                var name = row[1];
+                var lat = row[2];
+                var lon = row[3];
+                var type= row[4];
+                var tudieukhien = row[5]; // Assuming the URL is in the fifth column
+                var loaitru = row[6];
+                var loaican = row[7];
+                var loaiden = row[8];
+                var icon;
+
+                displayError('Error processing file: ' + name + 'lat: '+ lastLat + ' lon: '+lastLon + 'type' + type +' tu dk: '+tudieukhien+' laoitru:'+loaitru+' laoi can: ' + loaican);
+                    switch (type) {
+                    case 1:
+                        icon = customIcon1;
+                        break;
+                    case 2:
+                        icon = customIcon2;
+                        break;
+                    case 3:
+                        icon = customIcon3;
+                        break;
+                    case 4:
+                        icon = customIcon4;
+                        break;
+                    case 5:
+                        icon = customIcon5;
+                        break;
+                    case 6:
+                        icon = customIcon6;
+                        break;
+                    case 7:
+                        icon = customIcon7;
+                        break;
+                    default:
+                        icon = customIcon8; // Fallback icon
+                                }
+                                if (!isNaN(lat) && !isNaN(lon)) {
+                                        lastLat = lat;
+                    lastLon = lon;
+                    var marker = L.marker([lat, lon], {icon: icon}).addTo(map);
+                    
+                    var popupContent = 
+                    `<div>
+                    <strong>Tên trụ: ${name}</strong>
+                    </div>
+                    <div>Lat: ${lat}</div>
+                    <div>Lon: ${lon}</div>
+                    <div>Trụ: ${loaitru}</div>
+                    <div>Tủ: ${tudieukhien}</div>
+                    <div>Đèn: ${loaiden}</div>`;
+                    marker.bindPopup(popupContent);
+                 //   markersCluster.addLayer(marker)
+                       markers.push({lat: lat, lon: lon, name: name, marker: marker});
+
+                    if (name) {
+                        var label = L.divIcon({
+                            className: 'custom-label',
+                            html: `<div>${name}</div>`,
+                            iconSize: [100, 20],
+                            iconAnchor: [15, 25]
+                        });
+                        L.marker([lat, lon], {icon: label}).addTo(map);
+                    }
+                                }
+
+            });
+           
+            
+            if (lastLat !== undefined && lastLon !== undefined) {
+                map.setView([lastLat, lastLon], 20);
+            }
+        }
+//--------------------------------------
         function searchMarkers() {
             var input = document.getElementById('searchInput').value.toLowerCase();
             var found = false;
@@ -263,7 +301,7 @@ if (!isNaN(lat) && !isNaN(lon)) {
                 errorDiv.style.display = 'none';
             }
         }
-// Dịnh vị
+//--------------vi tri hien tai
 function centerOnUserLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
@@ -280,6 +318,7 @@ function centerOnUserLocation() {
                 displayError('Geolocation is not supported by your browser.');
             }
         }
+//----------
         function loadDefaultFile(map) {
             fetch('data/khaosat.xlsx')
                 .then(response => response.blob())
@@ -294,8 +333,7 @@ function centerOnUserLocation() {
         window.onload = function() {
             loadDefaultFile(map);
         };
-   
-   </script>
+    </script>
 </body>
 </html>
 
