@@ -171,11 +171,11 @@
                 var name = row[1];
                 var lat = row[2];
                 var lon = row[3];
-                var type= row[4];
+                var type= row[6];
                 var tudieukhien = row[5]; // Assuming the URL is in the fifth column
-                var loaitru = row[6];
-                var loaican = row[7];
-                var loaiden = row[8];
+                var loaitru = row[7];
+                var loaican = row[8];
+                var loaiden = row[9];
                 displayError('Error processing file: ' + name + 'lat: '+ lat + ' lon: '+lon + 'type' + type );
                 var icon;
                     switch (type) {
@@ -301,10 +301,10 @@ function centerOnUserLocation() {
             }
         }
         function loadDefaultFile(map) {
-            fetch('data/khoasat.xlsx')
+            fetch('data/quan1.xlsx')
                 .then(response => response.blob())
                 .then(blob => {
-                    var file = new File([blob], 'data/khaosat.xlsx');
+                    var file = new File([blob], 'data/quan1.xlsx');
                     processFile(file, map);
                 })
                 .catch(error => displayError('Error loading default file: ' + error.message));

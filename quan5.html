@@ -4,52 +4,146 @@
     <title>Lighting System V1.0</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- mobile metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- site metas -->
+    
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <meta name="author" content="Mai Vũ Lâm">
+    <!-- bootstrap css -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <!-- style css -->
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <!-- Responsive-->
+    <link rel="stylesheet" href="css/responsive.css">
+    <!-- fevicon -->
+    <link rel="icon" href="images/fevicon.png" type="image/gif" />
+    <!-- Scrollbar Custom CSS -->
+    <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css">
+    <!-- Tweaks for older IEs-->
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+    <!-- owl stylesheets --> 
+    <link rel="stylesheet" href="css/owl.carousel.min.css">
+    <link rel="stylesheet" href="css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+ <!-- cluster --> 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+
     <style>
-        #map { height: 600px; }
+        #map { height: 700px; }
         #error { color: red; display: none; }
         #searchContainer { margin: 10px 0; }
     </style>
 </head>
 <body>
-    <h1>Bản đồ hệ thống Chiếu sáng Khu vực Trung Tâm - Quận 5</h1>
+    <h1>Bản đồ hệ thống Chiếu sáng Khu vực Trung Tâm - Quận 5</h1> 
     <div id="pageSelector">
         <label for="pages">Chọn Quận:</label>
         <select id="pages" onchange="navigateToPage()">
-           
+            
+            <option value="quan5.html">Quận 5</option>
+            
             <option value="quan1.html">Quận 1</option>
             <option value="quan3.html">Quận 3</option>
-            <option value="quan5.html">Quận 5</option>
             <option value="quan8.html">Quận 8</option>
             <option value="quan10.html">Quận 10</option>
             <option value="quan11.html">Quận 11</option>
             <option value="quanpn.html">Quận Phú Nhuận</option>
             <option value="quanbt.html">Quận Bình Thạnh</option>
-            <option value="index.html">Trang chính</option>
+            <option value="index.html">Trang khảo sát</option>
         </select>
-    </div>
-   
-
-    <div id="searchContainer">
+        <id="searchContainer">
         <input type="text" id="searchInput" placeholder="Nhập tên hoặc tọa độ (lat, lon)" />
         <button onclick="searchMarkers()">Tìm kiếm</button>
+        <button onclick="centerOnUserLocation()">Center on My Location</button>
     </div>
     <div id="error"></div>
     <div id="map"></div>
-    <script>
+ <!-- copyright section start -->
+ <div class="copyright_section">
+    <p class="copyright_text">Copyright 8/2024 All Right Reserved By.<a href ="wwww.lavipco.tech" target="_blank"> CSKVTT  </a>    <img src="images/email-icon.png"><span class="map_icon">chieusangkhuvuctrungtam@gmail.com</span></p>
+</div>  <a href="https://www.example.com" target="_blank">Visit Example.com</a>
+
+<!-- copyright section end -->
+  
+
+   <script>
         var map = initializeMap();
+        var markersCluster = L.markerClusterGroup();
         var markers = [];
-        var customIcon = L.icon({
-            iconUrl: 'den2.png', // Ensure this path is correct
+        var customIcon1 = L.icon({
+            iconUrl: 'images/1.png', // Ensure this path is correct
             iconSize: [10, 10],
             iconAnchor: [5, 5],
             popupAnchor: [0, -10]
+            
+        });
+        var customIcon2 = L.icon({
+            iconUrl: 'images/2.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
+        }); 
+        var customIcon3 = L.icon({
+            iconUrl: 'images/3.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
+        });
+        var customIcon4 = L.icon({
+            iconUrl: 'images/4.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
+        });
+        var customIcon5 = L.icon({
+            iconUrl: 'images/5.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
+        });
+        var customIcon6 = L.icon({
+            iconUrl: 'images/9.png', // tu dieu khien
+            iconSize: [16, 20],
+            iconAnchor: [8, 10],
+            popupAnchor: [0, -10]
+            
+        });
+        var customIcon7 = L.icon({
+            iconUrl: 'images/7.png', // Ensure this path is correct
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
+        });
+        var customIcon8 = L.icon({
+            iconUrl: 'images/8.png', // vi tri hien tai
+            iconSize: [10, 10],
+            iconAnchor: [5, 5],
+            popupAnchor: [0, -10]
+            
         });
 
         function initializeMap() {
-            var map = L.map('map').setView([0, 0], 2);
+            var map = L.map('map').setView([10.7694693,	106.6928983], 10); //10.7694693,	106.6928983
+
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
@@ -72,17 +166,66 @@
             reader.readAsArrayBuffer(file);
         }
 
-        function addMarkersToMap(data, map) {
+    function addMarkersToMap(data, map) {
             var lastLat, lastLon;
             data.forEach(function(row) {
-                var lat = row[0];
-                var lon = row[1];
-                var name = row[2];
-                if (!isNaN(lat) && !isNaN(lon)) {
+                var name = row[1];
+                var lat = row[2];
+                var lon = row[3];
+                var type= row[6];
+                var tudieukhien = row[5]; // Assuming the URL is in the fifth column
+                var loaitru = row[7];
+                var loaican = row[8];
+                var loaiden = row[9];
+                displayError('Error processing file: ' + name + 'lat: '+ lat + ' lon: '+lon + 'type' + type );
+                var icon;
+                    switch (type) {
+                    case 1:
+                        icon = customIcon1;
+                        break;
+                    case 2:
+                        icon = customIcon2;
+                        break;
+                    case 3:
+                        icon = customIcon3;
+                        break;
+                    case 4:
+                        icon = customIcon4;
+                        break;
+                    case 5:
+                        icon = customIcon5;
+                        break;
+                    case 6:
+                        icon = customIcon6;
+                        break;
+                    case 7:
+                        icon = customIcon7;
+                        break;
+                    default:
+                        icon = customIcon8; // Fallback icon
+                }
+
+
+            if (!isNaN(lat) && !isNaN(lon)) {
+                    
+
                     lastLat = lat;
                     lastLon = lon;
-                    var marker = L.marker([lat, lon], {icon: customIcon}).addTo(map);
-                    markers.push({lat: lat, lon: lon, name: name, marker: marker});
+                    var marker = L.marker([lat, lon], {icon: icon}).addTo(map);
+                    
+                    var popupContent = 
+                    `<div>
+                    <strong>Tên trụ: ${name}</strong>
+                    </div>
+                    <div>Lat: ${lat}</div>
+                    <div>Lon: ${lon}</div>
+                    <div>Trụ: ${loaitru}</div>
+                    <div>Tủ: ${tudieukhien}</div>
+                    <div>Đèn: ${loaiden}</div>`;
+                    marker.bindPopup(popupContent);
+                    markersCluster.addLayer(marker)
+                       markers.push({lat: lat, lon: lon, name: name, marker: marker});
+
                     if (name) {
                         var label = L.divIcon({
                             className: 'custom-label',
@@ -92,17 +235,22 @@
                         });
                         L.marker([lat, lon], {icon: label}).addTo(map);
                     }
-                }
+                                }
+
             });
+           
+            
             if (lastLat !== undefined && lastLon !== undefined) {
                 map.setView([lastLat, lastLon], 20);
             }
+           // map.addLayer(markersCluster);
         }
+
         function navigateToPage() {
-    var select = document.getElementById("pages");
-    var selectedPage = select.value;
-    window.location.href = selectedPage;
-}
+                var select = document.getElementById("pages");
+                var selectedPage = select.value;
+                 window.location.href = selectedPage;
+                                    }
         function searchMarkers() {
             var input = document.getElementById('searchInput').value.toLowerCase();
             var found = false;
@@ -136,12 +284,28 @@
                 errorDiv.style.display = 'none';
             }
         }
-
+// Dịnh vị
+function centerOnUserLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+                    map.setView([lat, lon], 20);
+                    L.marker([lat, lon], {icon: customIcon8}).addTo(map)
+                        .bindPopup('You are here!')
+                        .openPopup();
+                }, function(error) {
+                    displayError('Unable to retrieve your location: ' + error.message);
+                });
+            } else {
+                displayError('Geolocation is not supported by your browser.');
+            }
+        }
         function loadDefaultFile(map) {
-            fetch('quan1.xlsx')
+            fetch('data/quan5.xlsx')
                 .then(response => response.blob())
                 .then(blob => {
-                    var file = new File([blob], 'quan1.xlsx');
+                    var file = new File([blob], 'data/quan5.xlsx');
                     processFile(file, map);
                 })
                 .catch(error => displayError('Error loading default file: ' + error.message));
@@ -151,7 +315,8 @@
         window.onload = function() {
             loadDefaultFile(map);
         };
-    </script>
+   
+   </script>
 </body>
 </html>
 
