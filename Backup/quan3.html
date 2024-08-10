@@ -173,13 +173,11 @@
                 var lat = row[2];
                 var lon = row[3];
                 var type= row[6];
-                var tudieukhien = row[7]; // Assuming the URL is in the fifth column
-                var loaitru = row[8];
-                var loaican = row[9];
-                var loaiden = row[10];
-                var icon;
-
-                displayError('Info: ' + name + 'lat: '+ lastLat + ' lon: '+lastLon + ' type: ' + type +' tu dk: '+tudieukhien+' Loại trụ: '+loaitru+' Loại cần: ' + loaican);
+                var tudieukhien = row[5]; // Assuming the URL is in the fifth column
+                var loaitru = row[7];
+                var loaican = row[8];
+                var loaiden = row[9];
+                displayError('Error processing file: ' + name + 'lat: '+ lat + ' lon: '+lon + 'type' + type );
                 var icon;
                     switch (type) {
                     case 1:

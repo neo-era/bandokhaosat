@@ -4,9 +4,10 @@
     <title>Lighting System V1.0</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
     <!-- mobile metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
@@ -49,14 +50,13 @@
     </style>
 </head>
 <body>
-    <h1>Bản đồ hệ thống Chiếu sáng Khu vực Trung Tâm - Quận 3</h1> 
+    <h1>Bản đồ hệ thống Chiếu sáng Khu vực Trung Tâm - Quận 1</h1> 
     <div id="pageSelector">
         <label for="pages">Chọn Quận:</label>
         <select id="pages" onchange="navigateToPage()">
             
-            
-            <option value="quan3.html">Quận 3</option>
             <option value="quan1.html">Quận 1</option>
+            <option value="quan3.html">Quận 3</option>
             <option value="quan5.html">Quận 5</option>
             <option value="quan8.html">Quận 8</option>
             <option value="quan10.html">Quận 10</option>
@@ -173,13 +173,11 @@
                 var lat = row[2];
                 var lon = row[3];
                 var type= row[6];
-                var tudieukhien = row[7]; // Assuming the URL is in the fifth column
-                var loaitru = row[8];
-                var loaican = row[9];
-                var loaiden = row[10];
-                var icon;
-
-                displayError('Info: ' + name + 'lat: '+ lastLat + ' lon: '+lastLon + ' type: ' + type +' tu dk: '+tudieukhien+' Loại trụ: '+loaitru+' Loại cần: ' + loaican);
+                var tudieukhien = row[5]; // Assuming the URL is in the fifth column
+                var loaitru = row[7];
+                var loaican = row[8];
+                var loaiden = row[9];
+                displayError('Info: ' + name + 'lat: '+ lat + ' lon: '+lon + 'type' + type );
                 var icon;
                     switch (type) {
                     case 1:
@@ -213,7 +211,7 @@
 
                     lastLat = lat;
                     lastLon = lon;
-                    var marker = L.marker([lat, lon], {icon: icon}).addTo(map);
+                    var marker = L.marker([lat, lon], {icon: icon});//.addTo(map);
                     
                     var popupContent = 
                     `<div>
@@ -226,7 +224,7 @@
                     <div>Đèn: ${loaiden}</div>`;
                     marker.bindPopup(popupContent);
                     markersCluster.addLayer(marker)
-                       markers.push({lat: lat, lon: lon, name: name, marker: marker});
+                    markers.push({lat: lat, lon: lon, name: name, marker: marker});
 
                     if (name) {
                         var label = L.divIcon({
@@ -235,7 +233,7 @@
                             iconSize: [100, 20],
                             iconAnchor: [15, 25]
                         });
-                        L.marker([lat, lon], {icon: label}).addTo(map);
+                        //L.marker([lat, lon], {icon: label}).addTo(map);
                     }
                                 }
 
@@ -243,9 +241,9 @@
            
             
             if (lastLat !== undefined && lastLon !== undefined) {
-                map.setView([lastLat, lastLon], 20);
+               map.setView([lastLat, lastLon], 20);
             }
-           // map.addLayer(markersCluster);
+            map.addLayer(markersCluster);
         }
 
         function navigateToPage() {
@@ -304,10 +302,10 @@ function centerOnUserLocation() {
             }
         }
         function loadDefaultFile(map) {
-            fetch('data/quan3.xlsx')
+            fetch('data/quan1.xlsx')
                 .then(response => response.blob())
                 .then(blob => {
-                    var file = new File([blob], 'data/quan3.xlsx');
+                    var file = new File([blob], 'data/quan1.xlsx');
                     processFile(file, map);
                 })
                 .catch(error => displayError('Error loading default file: ' + error.message));
