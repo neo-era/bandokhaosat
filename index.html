@@ -141,15 +141,25 @@
         });
 
         function initializeMap() {
+            var map = L.map('map').setView([10.7694693,	106.6928983], 10); //10.7694693,	106.6928983
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            return map;
+        }
+
+
+        function initializeMap2() {
            // var map = L.map('map').setView([0, 0], 2);
             var map = L.map('map', {
         center: [10.762622, 106.660172], // Example coordinates for Ho Chi Minh City
         zoom: 20, // Initial zoom level
-        maxZoom: 30 // Set the maximum zoom level
+        maxZoom: 19 // Set the maximum zoom level
     });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 30 // Ensure this matches the maxZoom in the map initialization
+        maxZoom: 19 // Ensure this matches the maxZoom in the map initialization
     }).addTo(map);
            // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
            //     attribution: '© OpenStreetMap contributors'
