@@ -4,10 +4,9 @@
     <title>Lighting System V1.0</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- mobile metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
@@ -54,13 +53,16 @@
     <div id="pageSelector">
         <label for="pages">Chọn Quận:</label>
         <select id="pages" onchange="navigateToPage()">
+            
             <option value="quanpn.html">Quận Phú Nhuận</option>
+          
             <option value="quan1.html">Quận 1</option>
             <option value="quan3.html">Quận 3</option>
             <option value="quan5.html">Quận 5</option>
             <option value="quan8.html">Quận 8</option>
             <option value="quan10.html">Quận 10</option>
             <option value="quan11.html">Quận 11</option>
+           
             <option value="quanbt.html">Quận Bình Thạnh</option>
             <option value="index.html">Trang khảo sát</option>
         </select>
@@ -141,12 +143,21 @@
         });
 
         function initializeMap() {
-            var map = L.map('map').setView([10.7694693,	106.6928983], 10); //10.7694693,	106.6928983
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
+           // var map = L.map('map').setView([0, 0], 2);
+            var map = L.map('map', {
+        center: [10.762622, 106.660172], // Example coordinates for Ho Chi Minh City
+        zoom: 20, // Initial zoom level
+        maxZoom: 19 // Set the maximum zoom level
+    });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19 // Ensure this matches the maxZoom in the map initialization
+    }).addTo(map);
+           // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+           //     attribution: '© OpenStreetMap contributors'
+           // }).addTo(map);
             return map;
+     
         }
 
         function processFile(file, map) {
@@ -172,11 +183,13 @@
                 var lat = row[2];
                 var lon = row[3];
                 var type= row[6];
-                var tudieukhien = row[5]; // Assuming the URL is in the fifth column
-                var loaitru = row[7];
-                var loaican = row[8];
-                var loaiden = row[9];
-                displayError('Info: ' + name + 'lat: '+ lat + ' lon: '+lon + 'type' + type );
+                var tudieukhien = row[7]; // Assuming the URL is in the fifth column
+                var loaitru = row[8];
+                var loaican = row[9];
+                var loaiden = row[10];
+                var icon;
+
+                displayError('Info: ' + name + 'lat: '+ lastLat + ' lon: '+lastLon + ' type: ' + type +' tu dk: '+tudieukhien+' Loại trụ: '+loaitru+' Loại cần: ' + loaican);
                 var icon;
                     switch (type) {
                     case 1:
@@ -223,7 +236,7 @@
                     <div>Đèn: ${loaiden}</div>`;
                     marker.bindPopup(popupContent);
                     markersCluster.addLayer(marker)
-                    markers.push({lat: lat, lon: lon, name: name, marker: marker});
+                       markers.push({lat: lat, lon: lon, name: name, marker: marker});
 
                     if (name) {
                         var label = L.divIcon({
@@ -232,7 +245,7 @@
                             iconSize: [100, 20],
                             iconAnchor: [15, 25]
                         });
-                        //L.marker([lat, lon], {icon: label}).addTo(map);
+                    //    L.marker([lat, lon], {icon: label}).addTo(map); //hien thi ten
                     }
                                 }
 
@@ -240,9 +253,9 @@
            
             
             if (lastLat !== undefined && lastLon !== undefined) {
-               map.setView([lastLat, lastLon], 20);
+                map.setView([lastLat, lastLon], 20);
             }
-       //     map.addLayer(markersCluster);
+           // map.addLayer(markersCluster);
         }
 
         function navigateToPage() {
