@@ -4,9 +4,10 @@
     <title>Lighting System V1.0</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+   
     <!-- mobile metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1">
@@ -49,11 +50,11 @@
     </style>
 </head>
 <body>
-    <h1>Bản đồ khảo sát hệ thống Chiếu sáng Khu vực Trung Tâm - Quan 8</h1>
+    <h1>Bản đồ hệ thống Chiếu sáng Khu vực Trung Tâm - Quận 8</h1> 
     <div id="pageSelector">
         <label for="pages">Chọn Quận:</label>
         <select id="pages" onchange="navigateToPage()">
-            <option value="quan8.html">Quận 8</option>
+            <option value="quan8.html">Quận 8</option> 
             <option value="quan1.html">Quận 1</option>
             <option value="quan3.html">Quận 3</option>
             <option value="quan5.html">Quận 5</option>
@@ -81,6 +82,7 @@
 
    <script>
         var map = initializeMap();
+        var markersCluster = L.markerClusterGroup();
         var markers = [];
         var customIcon1 = L.icon({
             iconUrl: 'images/1.png', // Ensure this path is correct
@@ -118,7 +120,7 @@
             
         });
         var customIcon6 = L.icon({
-            iconUrl: 'images/9.png', // Ensure this path is correct
+            iconUrl: 'images/9.png', // tu dieu khien
             iconSize: [16, 20],
             iconAnchor: [8, 10],
             popupAnchor: [0, -10]
@@ -139,12 +141,30 @@
             
         });
 
-        function initializeMap() {
-            var map = L.map('map').setView([0, 0], 2);
+        function initializeMap1() {
+            var map = L.map('map').setView([10.7694693,	106.6928983], 10); //10.7694693,	106.6928983
+
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
             return map;
+        }
+        function initializeMap() {
+           // var map = L.map('map').setView([0, 0], 2);
+            var map = L.map('map', {
+        center: [10.762622, 106.660172], // Example coordinates for Ho Chi Minh City
+        zoom: 13, // Initial zoom level
+        maxZoom: 19 // Set the maximum zoom level
+    });
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        maxZoom: 19 // Ensure this matches the maxZoom in the map initialization
+    }).addTo(map);
+           // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+           //     attribution: '© OpenStreetMap contributors'
+           // }).addTo(map);
+            return map;
+     
         }
 
         function processFile(file, map) {
@@ -163,47 +183,70 @@
             reader.readAsArrayBuffer(file);
         }
 
-        function addMarkersToMap(data, map) {
+    function addMarkersToMap(data, map) {
             var lastLat, lastLon;
             data.forEach(function(row) {
-                var lat = row[0];
-                var lon = row[1];
-                var name = row[2];
-                var type= row[3];
-                var url = row[4]; // Assuming the URL is in the fifth column
+               
+
+                var name = row[1];
+                var lat = row[2];
+                var lon = row[3];
+                var type= row[6];
+                var tudieukhien = row[7]; // Assuming the URL is in the fifth column
+                var loaitru = row[8];
+                var loaican = row[9];
+                var loaiden = row[10];
                 var icon;
-    switch (type) {
-    case 0:
-        icon = customIcon1;
-        break;
-    case 1:
-        icon = customIcon2;
-        break;
-    case 2:
-        icon = customIcon3;
-        break;
-    case 3:
-        icon = customIcon4;
-        break;
-    case 4:
-        icon = customIcon5;
-        break;
-    case 5:
-        icon = customIcon6;
-        break;
-    case 6:
-        icon = customIcon7;
-        break;
-    default:
-        icon = customIcon8; // Fallback icon
-}
+
+                displayError('Info: ' + name + 'lat: '+ lastLat + ' lon: '+lastLon + ' type: ' + type +' tu dk: '+tudieukhien+' Loại trụ: '+loaitru+' Loại cần: ' + loaican);
+                var icon;
+                    switch (type) {
+                    case 1:
+                        icon = customIcon1;
+                        break;
+                    case 2:
+                        icon = customIcon2;
+                        break;
+                    case 3:
+                        icon = customIcon3;
+                        break;
+                    case 4:
+                        icon = customIcon4;
+                        break;
+                    case 5:
+                        icon = customIcon5;
+                        break;
+                    case 6:
+                        icon = customIcon6;
+                        break;
+                    case 7:
+                        icon = customIcon7;
+                        break;
+                    default:
+                        icon = customIcon8; // Fallback icon
+                }
 
 
-if (!isNaN(lat) && !isNaN(lon)) {
+            if (!isNaN(lat) && !isNaN(lon)) {
+                    
+
                     lastLat = lat;
                     lastLon = lon;
                     var marker = L.marker([lat, lon], {icon: icon}).addTo(map);
+                    
+                    var popupContent = 
+                    `<div>
+                    <strong>Tên trụ: ${name}</strong>
+                    </div>
+                    <div>Lat: ${lat}</div>
+                    <div>Lon: ${lon}</div>
+                    <div>Trụ: ${loaitru}</div>
+                    <div>Tủ: ${tudieukhien}</div>
+                    <div>Đèn: ${loaiden}</div>`;
+                    marker.bindPopup(popupContent);
+                    markersCluster.addLayer(marker)
                     markers.push({lat: lat, lon: lon, name: name, marker: marker});
+
                     if (name) {
                         var label = L.divIcon({
                             className: 'custom-label',
@@ -211,13 +254,17 @@ if (!isNaN(lat) && !isNaN(lon)) {
                             iconSize: [100, 20],
                             iconAnchor: [15, 25]
                         });
-                        L.marker([lat, lon], {icon: label}).addTo(map);
+                        //L.marker([lat, lon], {icon: label}).addTo(map);
                     }
-                }
+                                }
+
             });
+           
+            
             if (lastLat !== undefined && lastLon !== undefined) {
-                map.setView([lastLat, lastLon], 20);
+               map.setView([lastLat, lastLon], 20);
             }
+          //  map.addLayer(markersCluster);
         }
 
         function navigateToPage() {

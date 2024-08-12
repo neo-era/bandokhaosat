@@ -232,7 +232,7 @@
 
                     lastLat = lat;
                     lastLon = lon;
-                    var marker = L.marker([lat, lon], {icon: icon});//.addTo(map);
+                    var marker = L.marker([lat, lon], {icon: icon}).addTo(map);
                     
                     var popupContent = 
                     `<div>
@@ -264,7 +264,7 @@
             if (lastLat !== undefined && lastLon !== undefined) {
                map.setView([lastLat, lastLon], 20);
             }
-            map.addLayer(markersCluster);
+          //  map.addLayer(markersCluster);
         }
 
         function navigateToPage() {
