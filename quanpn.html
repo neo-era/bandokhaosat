@@ -43,9 +43,49 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 
     <style>
-        #map { height: 700px; }
-        #error { color: red; display: none; }
-        #searchContainer { margin: 10px 0; }
+       
+h1 {
+            font-size: 24px; /* Font size for heading */
+            color: #2510c6; /* Heading color */
+            margin-bottom: 0px; /* Bottom margin for heading */
+            text-align: center; /* Center-align heading */
+        }
+        
+        button {
+            background-color: #007bff; /* Button background color */
+            color: #fff; /* Button text color */
+            border: none; /* Remove button border */
+            padding: 5px 20px; /* Button padding */
+            cursor: pointer; /* Pointer cursor */
+            margin-right: 5px; /* Right margin for buttons */
+            font-size: 16px; /* Font size for buttons */
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Button background color on hover */
+        }
+
+        #searchInput {
+            width: 230px; /* Width of page selector */
+            padding: 4px; /* Padding for page selector */
+            margin-top: 10px; /* Top margin for page selector */
+            text-align: center; /* Center-align elements in page selector */
+        }
+
+        #pages {
+            width: 150px; /* Width of page selector */
+            padding: 8px; /* Padding for page selector */
+            margin-top: 10px; /* Top margin for page selector */
+            text-align: center; /* Center-align elements in page selector */
+        }
+        #map {
+            height: 650px; /* Height of the map container */
+        }
+
+        #error {
+            color: red; /* Color of error messages */
+            display: none; /* Hide error messages by default */
+        }
     </style>
 </head>
 <body>
