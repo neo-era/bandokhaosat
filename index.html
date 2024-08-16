@@ -123,9 +123,12 @@ h1 {
   
 
    <script>
-        var map = initializeMap();
+      
+
+       var map;// = initializeMap();
         var markersCluster = L.markerClusterGroup();
         var markers = [];
+
         var customIcon1 = L.icon({
             iconUrl: 'images/1.png', // Ensure this path is correct
             iconSize: [10, 10],
@@ -184,23 +187,7 @@ h1 {
         });
 
       
-        function initializeMap() {
-           // var map = L.map('map').setView([0, 0], 2);
-            var map = L.map('map', {
-        center: [10.762622, 106.660172], // Example coordinates for Ho Chi Minh City
-        zoom: 13, // Initial zoom level
-        maxZoom: 19 // Set the maximum zoom level
-    });
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19 // Ensure this matches the maxZoom in the map initialization
-    }).addTo(map);
-           // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-           //     attribution: '© OpenStreetMap contributors'
-           // }).addTo(map);
-            return map;
-     
-        }
+       
 
         function processFile(file, map) {
             var reader = new FileReader();
@@ -216,6 +203,36 @@ h1 {
                 }
             };
             reader.readAsArrayBuffer(file);
+        }
+        function initializeMap() {
+            var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            });
+
+            var satelliteLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}@2x?lang=en&label=mapbox.satellite', {
+                attribution: '© Mapbox, © OpenStreetMap'
+            });
+
+            var terrainLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors, SRTM | © OpenTopoMap'
+            });
+
+            map = L.map('map', {
+                center: [10.762622, 106.660172],
+                zoom: 13,
+                maxZoom: 19,
+                layers: [osmLayer]
+            });
+
+            L.control.layers({
+                "OpenStreetMap": osmLayer,
+                "Satellite": satelliteLayer,
+                "Terrain": terrainLayer
+            }).addTo(map);
+
+           // markersCluster = L.markerClusterGroup().addTo(map);
+           // L.control.layers(baseLayers).addTo(map);
+            return map;
         }
 
     function addMarkersToMap(data, map) {
@@ -369,7 +386,9 @@ function centerOnUserLocation() {
 
         // Load the default file when the page loads
         window.onload = function() {
+         initializeMap();
             loadDefaultFile(map);
+            
         };
    
    </script>
