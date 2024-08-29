@@ -1,94 +1,68 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Lighting System V1.0</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-   
-    <!-- mobile metas -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
-    <!-- site metas -->
-    
-    <meta name="keywords" content="">
-    <meta name="description" content="">
-    <meta name="author" content="Mai Vũ Lâm">
-    <!-- bootstrap css -->
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-    <!-- style css -->
-    <link rel="stylesheet" type="text/css" href="css/style.css">
-    <!-- Responsive-->
-    <link rel="stylesheet" href="css/responsive.css">
-    <!-- fevicon -->
-    <link rel="icon" href="images/fevicon.png" type="image/gif" />
-    <!-- Scrollbar Custom CSS -->
-    <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css">
-    <!-- Tweaks for older IEs-->
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
-    <!-- owl stylesheets --> 
-    <link rel="stylesheet" href="css/owl.carousel.min.css">
-    <link rel="stylesheet" href="css/owl.theme.default.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
- <!-- cluster --> 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-
-    <style>
-
-h1 {
-            font-size: 24px; /* Font size for heading */
-            color: #2510c6; /* Heading color */
-            margin-bottom: 0px; /* Bottom margin for heading */
-            text-align: center; /* Center-align heading */
-        }
+    <head>
+        <title>Lighting System V1.0</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keywords" content="">
+        <meta name="description" content="">
+        <meta name="author" content="Mai Vũ Lâm">
         
-        button {
-            background-color: #007bff; /* Button background color */
-            color: #fff; /* Button text color */
-            border: none; /* Remove button border */
-            padding: 5px 20px; /* Button padding */
-            cursor: pointer; /* Pointer cursor */
-            margin-right: 5px; /* Right margin for buttons */
-            font-size: 16px; /* Font size for buttons */
-        }
-
-        button:hover {
-            background-color: #0056b3; /* Button background color on hover */
-        }
-
-        #searchInput {
-            width: 230px; /* Width of page selector */
-            padding: 4px; /* Padding for page selector */
-            margin-top: 10px; /* Top margin for page selector */
-            text-align: center; /* Center-align elements in page selector */
-        }
-
-        #pages {
-            width: 150px; /* Width of page selector */
-            padding: 8px; /* Padding for page selector */
-            margin-top: 10px; /* Top margin for page selector */
-            text-align: center; /* Center-align elements in page selector */
-        }
-        #map {
-            height: 650px; /* Height of the map container */
-        }
-
-        #error {
-            color: red; /* Color of error messages */
-            display: none; /* Hide error messages by default */
-        }
-    </style>
-</head>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <!-- Custom CSS -->
+        <link rel="stylesheet" type="text/css" href="css/style.css">
+        <link rel="stylesheet" href="css/responsive.css">
+        <link rel="icon" href="images/fevicon.png" type="image/gif" />
+        <link rel="stylesheet" href="css/jquery.mCustomScrollbar.min.css">
+        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css">
+        <link rel="stylesheet" href="css/owl.carousel.min.css">
+        <link rel="stylesheet" href="css/owl.theme.default.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.5/jquery.fancybox.min.css" media="screen">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+        <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    
+        <style>
+            h1 {
+                font-size: 24px;
+                color: #2510c6;
+                margin-bottom: 0px;
+                text-align: center;
+            }
+            
+            button {
+                background-color: #007bff;
+                color: #fff;
+                border: none;
+                padding: 5px 20px;
+                cursor: pointer;
+                margin-right: 5px;
+                font-size: 16px;
+            }
+    
+            button:hover {
+                background-color: #0056b3;
+            }
+    
+            #searchInput, #pages {
+                width: 230px;
+                padding: 4px;
+                margin-top: 10px;
+                text-align: center;
+            }
+    
+            #map {
+                height: 650px;
+            }
+    
+            #error {
+                color: red;
+                display: none;
+            }
+        </style>
+    </head>
 <body>
    
     <h1>BẢN ĐỒ KHẢO SÁT HỆ THỐNG CHIẾU SÁNG CÔNG CỘNG</h1> 
@@ -250,7 +224,7 @@ h1 {
                 var loaiden = row[10];
                 var icon;
 
-                displayError('Info: ' + name + 'lat: '+ lastLat + ' lon: '+lastLon + ' type: ' + type +' tu dk: '+tudieukhien+' Loại trụ: '+loaitru+' Loại cần: ' + loaican);
+              //  displayError('Info: ' + name + 'lat: '+ lastLat + ' lon: '+lastLon + ' type: ' + type +' tu dk: '+tudieukhien+' Loại trụ: '+loaitru+' Loại cần: ' + loaican);
                 var icon;
                     switch (type) {
                     case 1:

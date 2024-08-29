@@ -7,16 +7,17 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/exceljs@4.2.0/dist/exceljs.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body, html {
             height: 100%;
             margin: 0;
             font-family: Arial, sans-serif;
         }
+
         #map {
-            height: 80%;
+            height: 100%;
         }
+
         #controls {
             position: absolute;
             top: 10px;
@@ -27,10 +28,12 @@
             border-radius: 5px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.3);
         }
+
         #controls input, #controls button {
             padding: 5px;
             margin-right: 5px;
         }
+
         #notification {
             position: absolute;
             top: 50px;
@@ -42,35 +45,19 @@
             border-radius: 5px;
             display: none;
         }
+
         .popup-content input {
             width: 100%;
             margin-bottom: 5px;
         }
+
         .popup-content label {
             font-weight: bold;
         }
+
         #imagePreview {
             max-width: 100%;
             display: none;
-        }
-        .icon-custom {
-            width: 24px;
-            height: 24px;
-        }
-        #markerList {
-            position: absolute;
-            top: 100px;
-            left: 10px;
-            z-index: 1000;
-            background: white;
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        #markerList div {
-            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -88,13 +75,10 @@
 </div>
 
 <div id="notification">Location has been saved to Excel!</div>
-<div id="error"></div>
+
 <div id="map"></div>
-<div id="markerList"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/exceljs@4.2.0/dist/exceljs.min.js"></script>
 <script>
     // Define different basemaps
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -115,8 +99,8 @@
 
     // Initialize the map and set its view to a starting point and zoom level
     var map = L.map('map', {
-        center: [10.762622, 106.660172],  // Default location: Ho Chi Minh City, Vietnam
-        zoom: 15,
+        center: [21.0285, 105.8542],  // Default location: Hanoi, Vietnam
+        zoom: 13,
         layers: [osm]  // Set default layer
     });
 
@@ -129,109 +113,358 @@
 
     L.control.layers(baseMaps).addTo(map);
 
-    // Define custom icons for different types of markers
-    const iconUrls = {
-        type1: 'https://example.com/icon1.png', // Replace with your icon URLs
-        type2: 'https://example.com/icon2.png',
-        type3: 'https://example.com/icon3.png',
-        type4: 'https://example.com/icon4.png',
-        type5: 'https://example.com/icon5.png',
-        type6: 'https://example.com/icon6.png'
-    };
+    // Variable to store the current location
+    var currentLocation = null;
+
+    // Array to store all saved locations
+    var savedLocations = [];
+
+    // Array to store all markers
+    var markers = [];
 
     // Function to search for a location
     function searchLocation() {
         var location = document.getElementById('locationInput').value;
-        // Implement search functionality here
+        if (location) {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${location}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        var lat = data[0].lat;
+                        var lon = data[0].lon;
+                        map.setView([lat, lon], 13);  // Move map to the searched location
+
+                        // Add a marker at the searched location
+                        L.marker([lat, lon]).addTo(map)
+                            .bindPopup(`<b>${location}</b><br>Latitude: ${lat}, Longitude: ${lon}`)
+                            .openPopup();
+                    } else {
+                        alert("Location not found");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("An error occurred while searching for the location");
+                });
+        } else {
+            alert("Please enter a location");
+        }
     }
 
     // Function to track user's location
     function trackLocation() {
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
+            navigator.geolocation.watchPosition(function(position) {
                 var lat = position.coords.latitude;
-                var lng = position.coords.longitude;
-                var marker = L.marker([lat, lng]).addTo(map);
-                map.setView([lat, lng], 15);
-                // Save location to Excel
-                saveLocationToExcel(lat, lng);
+                var lon = position.coords.longitude;
+                var accuracy = position.coords.accuracy;
+
+                map.setView([lat, lon], 15);  // Move map to the user's current location
+
+                // Store the current location
+                currentLocation = {
+                    latitude: lat,
+                    longitude: lon,
+                    accuracy: accuracy,
+                    timestamp: new Date(position.timestamp).toLocaleString(),
+                    name: '',
+                    street: '',
+                    address: '',
+                    note: '',
+                    image: ''
+                };
+
+                // Create or update a marker for the user's current location with a popup form
+                if (!map.userMarker) {
+                    map.userMarker = L.marker([lat, lon], {
+                        title: "You are here",
+                        draggable: true
+                    }).addTo(map);
+                } else {
+                    map.userMarker.setLatLng([lat, lon]);
+                }
+
+                // Show accuracy circle
+                if (!map.userAccuracyCircle) {
+                    map.userAccuracyCircle = L.circle([lat, lon], { radius: accuracy }).addTo(map);
+                } else {
+                    map.userAccuracyCircle.setLatLng([lat, lon]).setRadius(accuracy);
+                }
+
+                // Bind popup with the form
+                bindPopupWithForm(map.userMarker);
+            }, function(error) {
+                alert("Unable to retrieve your location due to " + error.message);
+            }, {
+                enableHighAccuracy: true,
+                maximumAge: 10000,
+                timeout: 5000
             });
         } else {
-            alert("Geolocation is not supported by this browser.");
+            alert("Geolocation is not supported by your browser");
         }
     }
 
-    // Function to save location to Excel
-    function saveLocationToExcel(lat, lng) {
-        var workbook = new ExcelJS.Workbook();
-        var worksheet = workbook.addWorksheet('Locations');
-        worksheet.columns = [
-            { header: 'Latitude', key: 'lat' },
-            { header: 'Longitude', key: 'lng' }
-        ];
-        worksheet.addRow({ lat: lat, lng: lng });
-        workbook.xlsx.writeBuffer().then(function(data) {
-            var blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            var url = window.URL.createObjectURL(blob);
-            var a = document.createElement('a');
-            a.href = url;
-            a.download = 'locations.xlsx';
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.getElementById('notification').style.display = 'block';
-            setTimeout(function() {
-                document.getElementById('notification').style.display = 'none';
-            }, 3000);
-        });
-    }
-
-    // Function to locate user
+    // Function to locate user’s current position
     function locateUser() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 var lat = position.coords.latitude;
-                var lng = position.coords.longitude;
-                map.setView([lat, lng], 15);
+                var lon = position.coords.longitude;
+
+                // Store the current location
+                currentLocation = {
+                    latitude: lat,
+                    longitude: lon,
+                    accuracy: position.coords.accuracy,
+                    timestamp: new Date(position.timestamp).toLocaleString(),
+                    name: '',
+                    street: '',
+                    address: '',
+                    note: '',
+                    image: ''
+                };
+
+                // Move map to the user's current location
+                map.setView([lat, lon], 15);
+
+                // Create or update a marker for the user's current location
+                if (!map.userMarker) {
+                    map.userMarker = L.marker([lat, lon], {
+                        title: "You are here",
+                        draggable: true
+                    }).addTo(map);
+                } else {
+                    map.userMarker.setLatLng([lat, lon]);
+                }
+
+                // Show accuracy circle
+                if (!map.userAccuracyCircle) {
+                    map.userAccuracyCircle = L.circle([lat, lon], { radius: currentLocation.accuracy }).addTo(map);
+                } else {
+                    map.userAccuracyCircle.setLatLng([lat, lon]).setRadius(currentLocation.accuracy);
+                }
+
+                // Bind popup with the form
+                bindPopupWithForm(map.userMarker);
+            }, function(error) {
+                alert("Unable to retrieve your location due to " + error.message);
             });
         } else {
-            alert("Geolocation is not supported by this browser.");
+            alert("Geolocation is not supported by your browser");
         }
     }
 
-    // Function to save all locations to Excel
-    function saveLocationsToExcel() {
-        // Implement functionality to save all locations to Excel
+    // Function to bind popup with form inputs including image upload
+    function bindPopupWithForm(marker) {
+        var popupContent = `
+            <div class="popup-content">
+               
+                <label>Latitude:</label>
+                <input type="text" id="lat" value="${currentLocation.latitude}" readonly><br>
+                <label>Longitude:</label>
+                <input type="text" id="lon" value="${currentLocation.longitude}" readonly><br>
+                <label>Name:</label>
+                <input type="text" id="name" value="${currentLocation.name}" placeholder="Enter name"><br>
+                <label>Street:</label>
+                <input type="text" id="street" value="${currentLocation.street}" placeholder="Enter street"><br>
+                <label>Address:</label>
+                <input type="text" id="address" value="${currentLocation.address}" placeholder="Enter address"><br>
+                <label>Note:</label>
+                <input type="text" id="note" value="${currentLocation.note}" placeholder="Enter note"><br>
+                <label>Upload Image:</label>
+                <input type="file" id="imageUpload" accept="image/*" onchange="previewImage(event)"><br>
+                <img id="imagePreview" src="${currentLocation.image}" alt="Image Preview" style="max-width: 100%;"><br>
+                <button onclick="savePopupData()">Save</button>
+            </div>
+        `;
+
+        marker.bindPopup(popupContent).openPopup();
     }
 
-    // Function to load locations from Excel
-    function loadLocationsFromExcel(event) {
-        var file = event.target.files[0];
+    // Function to preview the uploaded image
+    function previewImage(event) {
         var reader = new FileReader();
-        reader.onload = function(e) {
-            var data = new Uint8Array(e.target.result);
-            var workbook = XLSX.read(data, { type: 'array' });
-            var sheet = workbook.Sheets[workbook.SheetNames[0]];
-            var rows = XLSX.utils.sheet_to_json(sheet);
-            var markerList = document.getElementById('markerList');
-            markerList.innerHTML = ''; // Clear previous list
-
-            rows.forEach(function(row, index) {
-                var lat = row.Latitude;
-                var lng = row.Longitude;
-                var marker = L.marker([lat, lng]).addTo(map);
-
-                // Add marker to the list
-                var listItem = document.createElement('div');
-                listItem.innerHTML = `Marker ${index + 1}: Latitude: ${lat}, Longitude: ${lng}`;
-                markerList.appendChild(listItem);
-            });
+        reader.onload = function() {
+            var image = document.getElementById('imagePreview');
+            image.src = reader.result;
+            image.style.display = 'block';
         };
-        reader.readAsArrayBuffer(file);
+        reader.readAsDataURL(event.target.files[0]);
     }
 
-    // Function to clear all markers
+    // Function to save data from popup form
+    function savePopupData() {
+        currentLocation.name = document.getElementById("name").value;
+        currentLocation.street = document.getElementById("street").value;
+        currentLocation.address = document.getElementById("address").value;
+        currentLocation.note = document.getElementById("note").value;
+
+        // Get the image data
+        var imageElement = document.getElementById('imagePreview');
+        currentLocation.image = imageElement.src || '';
+
+        // Add currentLocation to the savedLocations array
+        savedLocations.push({
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+            name: currentLocation.name,
+            street: currentLocation.street,
+            address: currentLocation.address,
+            note: currentLocation.note,
+            timestamp: currentLocation.timestamp,
+            image: currentLocation.image
+        });
+
+        // Update the popup content to display saved information
+        var updatedPopupContent = `
+            <div class="popup-content">
+                <label>Latitude:</label>
+                <input type="text" id="lat" value="${currentLocation.latitude}" readonly><br>
+                <label>Longitude:</label>
+                <input type="text" id="lon" value="${currentLocation.longitude}" readonly><br>
+                <label>Name:</label>
+                <input type="text" id="name" value="${currentLocation.name}" readonly><br>
+                <label>Street:</label>
+                <input type="text" id="street" value="${currentLocation.street}" readonly><br>
+                <label>Address:</label>
+                <input type="text" id="address" value="${currentLocation.address}" readonly><br>
+                <label>Note:</label>
+                <input type="text" id="note" value="${currentLocation.note}" readonly><br>
+                <label>Image:</label>
+                <img src="${currentLocation.image}" style="max-width: 100%;"><br>
+            </div>
+        `;
+
+        // Re-bind the popup with the updated content
+        map.userMarker.bindPopup(updatedPopupContent).openPopup();
+
+        // Optional: Hide the accuracy circle once data is saved
+        if (map.userAccuracyCircle) {
+            map.userAccuracyCircle.remove();
+        }
+
+        // Show notification
+        document.getElementById('notification').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('notification').style.display = 'none';
+        }, 3000);
+    }
+
+    // Function to save the locations array to an Excel file including images
+    async function saveLocationsToExcel() {
+        const workbook = new ExcelJS.Workbook();
+        const worksheet = workbook.addWorksheet('Locations');
+
+        worksheet.columns = [
+            { header: 'Latitude', key: 'latitude' },
+            { header: 'Longitude', key: 'longitude' },
+            { header: 'Name', key: 'name' },
+            { header: 'Street', key: 'street' },
+            { header: 'Address', key: 'address' },
+            { header: 'Note', key: 'note' },
+            { header: 'Timestamp', key: 'timestamp' },
+            { header: 'Image', key: 'image' }
+        ];
+
+        for (const location of savedLocations) {
+            const row = worksheet.addRow({
+                latitude: location.latitude,
+                longitude: location.longitude,
+                name: location.name,
+                street: location.street,
+                address: location.address,
+                note: location.note,
+                timestamp: location.timestamp,
+                image: ''  // Image will be handled separately
+            });
+
+            if (location.image) {
+                // Convert base64 image to buffer
+                const imageBuffer = await fetch(location.image).then(res => res.arrayBuffer());
+                const imageId = workbook.addImage({
+                    buffer: imageBuffer,
+                    extension: 'png'
+                });
+
+                // Add the image to the cell
+                worksheet.addImage(imageId, {
+                    tl: { col: 7, row: row.number - 1 },  // Place image in the 'Image' column
+                    ext: { width: 100, height: 100 }
+                });
+            }
+        }
+
+        workbook.xlsx.writeBuffer().then(buffer => {
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'locations.xlsx';
+            link.click();
+        });
+    }
+
+    // Function to load locations from an Excel file
+    function loadLocationsFromExcel(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet);
+
+                // Clear existing markers
+                clearMarkers();
+
+                json.forEach(location => {
+                    if (location.latitude && location.longitude) {
+                        var marker = L.marker([location.latitude, location.longitude]).addTo(map);
+                        marker.bindPopup(`
+                            <div class="popup-content">
+                                <label>Latitude:</label>
+                                <input type="text" value="${location.latitude}" readonly><br>
+                                <label>Longitude:</label>
+                                <input type="text" value="${location.longitude}" readonly><br>
+                                <label>Name:</label>
+                                <input type="text" value="${location.name}" readonly><br>
+                                <label>Street:</label>
+                                <input type="text" value="${location.street}" readonly><br>
+                                <label>Address:</label>
+                                <input type="text" value="${location.address}" readonly><br>
+                                <label>Note:</label>
+                                <input type="text" value="${location.note}" readonly><br>
+                                <label>Timestamp:</label>
+                                <input type="text" value="${location.timestamp}" readonly><br>
+                                <label>Image:</label>
+                                ${location.image ? `<img src="${location.image}" style="max-width: 100%;">` : ''}
+                            </div>
+                        `);
+                        markers.push(marker);
+                    }
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    }
+
+    // Function to clear all markers from the map
+    function clearMarkers1() 
+    {
+        markers.forEach(marker => marker.remove());
+        markers = [];
+        var marker = L.marker([location.latitude, location.longitude]).addTo(map);
+        addto(map, marker);
+    }
     function clearMarkers() {
-        // Implement functionality to clear all markers
+        map.eachLayer(function (layer) {
+            if (layer instanceof L.Marker) {
+                map.removeLayer(layer);
+            }
+        });
+        document.getElementById('markerList').innerHTML = '';
     }
 </script>
 
