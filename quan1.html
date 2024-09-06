@@ -15,7 +15,7 @@
         }
 
         #map {
-            height: 80%;
+            height: 100%;
         }
 
         #controls {
@@ -68,6 +68,8 @@
     <button onclick="searchLocation()">Search</button>
     <button onclick="trackLocation()">Track My Location</button>
     <button onclick="saveLocation()">Save Location to Excel</button>
+    
+    <button onclick="addManualLocation()">Add Manual Location</button>
     <button onclick="locateUser()">Locate Me</button>
     <button onclick="saveLocationsToExcel()">Download All Locations</button>
     <input type="file" id="fileInput" accept=".xlsx" onchange="loadLocationsFromExcel(event)">
@@ -82,25 +84,25 @@
 <script>
     // Define different basemaps
     var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
+        maxZoom: 30,
         attribution: '© OpenStreetMap contributors'
     });
 
     var satellite = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-        maxZoom: 19,
+        maxZoom: 30,
         subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
         attribution: '© Google Maps'
     });
 
     var terrain = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        maxZoom: 17,
+        maxZoom: 30,
         attribution: '© OpenTopoMap contributors'
     });
 
     // Initialize the map and set its view to a starting point and zoom level
     var map = L.map('map', {
-        center: [21.0285, 105.8542],  // Default location: Hanoi, Vietnam
-        zoom: 13,
+        center: [10.762622, 106.660172],  // Default location: Hanoi, Vietnam
+        zoom: 20,
         layers: [osm]  // Set default layer
     });
 
@@ -121,6 +123,9 @@
 
     // Array to store all markers
     var markers = [];
+//
+let isPopupSaved = true;
+//let locations = [];
 
     // Function to search for a location
     function searchLocation() {
@@ -226,7 +231,7 @@
                 };
 
                 // Move map to the user's current location
-                map.setView([lat, lon], 15);
+               map.setView([lat, lon], 20);
 
                 // Create or update a marker for the user's current location
                 if (!map.userMarker) {
@@ -238,13 +243,6 @@
                     map.userMarker.setLatLng([lat, lon]);
                 }
 
-                // Show accuracy circle
-                if (!map.userAccuracyCircle) {
-                    map.userAccuracyCircle = L.circle([lat, lon], { radius: currentLocation.accuracy }).addTo(map);
-                } else {
-                    map.userAccuracyCircle.setLatLng([lat, lon]).setRadius(currentLocation.accuracy);
-                }
-
                 // Bind popup with the form
                 bindPopupWithForm(map.userMarker);
             }, function(error) {
@@ -254,13 +252,47 @@
             alert("Geolocation is not supported by your browser");
         }
     }
+////////////////////////////////////////////////////////////////
 
-    // Function to bind popup with form inputs including image upload
+function addManualLocation() {
+    map.on('click', function(e) {
+        var lat = e.latlng.lat;
+        var lng = e.latlng.lng;
+        
+        // Add a new marker to the map at the clicked location
+      
+
+        var marker = L.marker([lat, lng], {
+            title: "Manual Location " + lat,
+            draggable: true
+        }).addTo(map);
+
+        currentLocation = {
+            latitude: lat,
+            longitude: lng,
+            accuracy: 0,
+            timestamp: new Date().toLocaleString(),
+            name: '',
+            street: '',
+            address: '',
+            note: '',
+            image: ''
+        };
+
+        bindPopupWithForm(marker);
+    });
+}
+
+
+////////////////////////////////////////////////////////////////
+function updateUserMarker(lat, lng) {
+    userMarker.setLatLng([lat, lng]);
+}   
+// Function to bind popup with form inputs including image upload
     function bindPopupWithForm(marker) {
         var popupContent = `
             <div class="popup-content">
-                <label>Latitude:</label>
-                <input type="text" id
+               
                 <label>Latitude:</label>
                 <input type="text" id="lat" value="${currentLocation.latitude}" readonly><br>
                 <label>Longitude:</label>
@@ -282,7 +314,29 @@
 
         marker.bindPopup(popupContent).openPopup();
     }
+//----------------------------------------------------------------
+function showAllMarkers() {
+    savedLocations.forEach(location => {
+        const marker = L.marker([location.latitude, location.longitude], {
+            title: location.name || "Location",
+            draggable: true
+        }).addTo(map);
 
+        // Bind popup with location details
+        const popupContent = `
+            <div>
+                <strong>Name:</strong> ${location.name}<br>
+                <strong>Street:</strong> ${location.street}<br>
+                <strong>Address:</strong> ${location.address}<br>
+                <strong>Note:</strong> ${location.note}<br>
+                <strong>Image:</strong> <img src="${location.image}" alt="Image" style="max-width: 100%;">
+            </div>
+        `;
+        marker.bindPopup(popupContent);
+    });
+  
+}
+////////////////////////////////
     // Function to preview the uploaded image
     function previewImage(event) {
         var reader = new FileReader();
@@ -294,7 +348,7 @@
         reader.readAsDataURL(event.target.files[0]);
     }
 
-    // Function to save data from popup form
+    // Function to save data from popup form savePopupData
     function savePopupData() {
         currentLocation.name = document.getElementById("name").value;
         currentLocation.street = document.getElementById("street").value;
@@ -338,18 +392,20 @@
         `;
 
         // Re-bind the popup with the updated content
-        map.userMarker.bindPopup(updatedPopupContent).openPopup();
-
+       map.userMarker.bindPopup(updatedPopupContent).openPopup();
+       // marker.bindPopup(updatedPopupContent).openPopup();
         // Optional: Hide the accuracy circle once data is saved
         if (map.userAccuracyCircle) {
             map.userAccuracyCircle.remove();
         }
-
-        // Show notification
-        document.getElementById('notification').style.display = 'block';
-        setTimeout(() => {
-            document.getElementById('notification').style.display = 'none';
-        }, 3000);
+//set trang thaia
+    //isPopupSaved = true;
+   alert("Location saved!"+ marker.latitude + marker.longitude);
+//  map.closePopup();
+  //map.userMarker=null;
+  showAllMarkers(); // Show all markers after saving
+   
+    return; // Exit the function after saving
     }
 
     // Function to save the locations array to an Excel file including images
@@ -405,7 +461,10 @@
         });
     }
 
+/////////////////
+
     // Function to load locations from an Excel file
+
     function loadLocationsFromExcel(event) {
         const file = event.target.files[0];
         if (file) {
@@ -418,7 +477,7 @@
                 const json = XLSX.utils.sheet_to_json(worksheet);
 
                 // Clear existing markers
-                clearMarkers();
+                //clearMarkers();
 
                 json.forEach(location => {
                     if (location.latitude && location.longitude) {
@@ -453,9 +512,13 @@
 
     // Function to clear all markers from the map
     function clearMarkers() {
-        markers.forEach(marker => marker.remove());
-        markers = [];
+       // markers.forEach(marker => marker.remove());
+      //  markers = [];
     }
+
+//
+
+
 </script>
 
 </body>
