@@ -186,14 +186,14 @@
                         [markers[i].data.latitude, markers[i].data.longitude]
                     );
                     var listItem = document.createElement('li');
-                    listItem.textContent = `Distance between ${markers[i - 1].data.name} and ${markers[i].data.name}: ${distance.toFixed(2)} meters`;
+                    listItem.textContent = `Distance between ${markers[i - 1].data.name} and ${markers[i].data.name}: ${distance.toFixed(2)} m`;
                     distanceList.appendChild(listItem);
                     markers[i].data.distanceToPrevious = distance.toFixed(2);
                 }
             }
         }
 
-        function drawLines() {
+        function drawLines1() {
             lines.forEach(line => map.removeLayer(line));
             lines = [];
             for (var i = 1; i < markers.length; i++) {
@@ -206,7 +206,40 @@
                 }
             }
         }
+        function drawLines() {
+            lines.forEach(line => map.removeLayer(line));
+            lines = [];
+            for (var i = 1; i < markers.length; i++) {
+                if (markers[i - 1].data && markers[i].data) {
+                    var line = L.polyline([
+                        [markers[i - 1].data.latitude, markers[i - 1].data.longitude],
+                        [markers[i].data.latitude, markers[i].data.longitude]
+                    ], {color: 'blue'}).addTo(map);
 
+                    // Add distance label to the polyline
+                    var midPoint = [
+                        (markers[i - 1].data.latitude + markers[i].data.latitude) / 2,
+                        (markers[i - 1].data.longitude + markers[i].data.longitude) / 2
+                    ];
+                  
+
+//---------
+
+                        var distanceLabel = L.divIcon({
+                            className: 'custom-label',
+                            html: `<div>${name}</div>`,
+                            iconSize: [100, 20],
+                            iconAnchor: [15, 25]
+                        });
+                        L.marker(midPoint, {icon: distanceLabel}).addTo(map);
+                    
+//----------
+
+                    lines.push(line);
+                    lines.push(distanceLabel);
+                }
+            }
+        }
         function saveMarkersToExcel() {
             var wb = XLSX.utils.book_new();
             var ws_data

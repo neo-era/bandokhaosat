@@ -229,7 +229,7 @@
                     var listItem = document.createElement('li');
                     listItem.textContent = `${marker.data.name}: ${marker.data.address}`;
                     listItem.onclick = () => {
-                        map.setView(marker.getLatLng(), 15); // Zoom in on the marker
+                        map.setView(marker.getLatLng(), 18); // Zoom in on the marker
                         marker.openPopup(); // Open the marker popup
                     };
                     markerList.appendChild(listItem);
