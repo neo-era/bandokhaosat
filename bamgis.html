@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web GIS with Location Tracking</title>
+    <title>Web for update GIS</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <style>
         body {
@@ -32,7 +32,7 @@
         .popup-content {
             display: flex;
             flex-direction: column;
-            width: 300px; /* Adjust popup width */
+            width: 150px; /* Adjust popup width */
         }
         .popup-content label {
             margin-top: 5px;
@@ -44,6 +44,14 @@
             background-color: white;
             padding: 2px;
         }
+        .distance-tooltip {
+    background-color: transparent;
+    border: none;
+    padding: 5px;
+    font-size: 12px;
+    color: rgb(67, 13, 231);
+}
+
         @media (max-width: 768px) {
             #map {
                 width: 100%;
@@ -67,10 +75,10 @@
         <button onclick="saveMarkersToExcel()">Save Markers to Excel</button>
         <button onclick="trackLocation()">Track My Location</button>
         <div class="info">
-            <h2>Marker Information</h2>
+            <h2>Thông tin điểm</h2>
             <p><strong>Number of Markers Saved:</strong> <span id="marker-count">0</span></p>
             <ul id="marker-list"></ul>
-            <h2>Distances Between Markers</h2>
+            <h2>Khoảng cách giữa hai điểm</h2>
             <ul id="distance-list"></ul>
         </div>
     </div>
@@ -94,11 +102,40 @@
             ]
         ]);
 
-        var map = L.map('map').setView([10.762622, 106.660172], 16); // Coordinates for Ho Chi Minh City
+   
+//-------
+var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 30,
+        attribution: '© OpenStreetMap contributors'
+    });
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+    var satellite = L.tileLayer('https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+        maxZoom: 30,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: '© Google Maps'
+    });
+
+    var terrain = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        maxZoom: 30,
+        attribution: '© OpenTopoMap contributors'
+    });
+
+    // Initialize the map and set its view to a starting point and zoom level
+    var map = L.map('map', {
+        center: [10.733956599400809, 106.6409718990326],  // 167 luu hu phuoc
+        zoom: 19,
+        layers: [osm]  // Set default layer
+    });
+
+    // Create a layer control and add it to the map
+    var baseMaps = {
+        "OpenStreetMap": osm,
+        "Satellite": satellite,
+        "Terrain": terrain
+    };
+
+    L.control.layers(baseMaps).addTo(map);
+//--------
 
         var markers = [];
         var lines = [];
@@ -109,9 +146,19 @@
             popupAnchor: [0, -10]
             
         });
+        var largeDefaultIcon = L.icon({
+            iconUrl: 'images/10.png',
+            iconRetinaUrl: L.Icon.Default.prototype.options.iconRetinaUrl,
+            shadowUrl: L.Icon.Default.prototype.options.shadowUrl,
+            iconSize: [50, 82], // Kích thước của biểu tượng lớn hơn
+            iconAnchor: [25, 82], // Điểm neo của biểu tượng (giữa đáy biểu tượng)
+            popupAnchor: [0, -82], // Điểm neo của popup (trên biểu tượng)
+            shadowSize: L.Icon.Default.prototype.options.shadowSize,
+            shadowAnchor: L.Icon.Default.prototype.options.shadowAnchor
+        });
 
         map.on('click', function(e) {
-            var marker = L.marker(e.latlng, {draggable: true}).addTo(map);
+            var marker = L.marker(e.latlng, {icon: largeDefaultIcon, draggable: true}).addTo(map);
             marker.on('dragend', function(e) {
                 updateMarkerInfo(e);
             });
@@ -219,7 +266,7 @@
                     notes
                 };
                 var markerName = name;
-                marker.bindTooltip(markerName, {permanent: true, direction: 'top'}).openTooltip();
+                marker.bindTooltip(markerName, {permanent: false, direction: 'top'}).openTooltip();
                 updateMarkerList();
                 updateDistanceList();
                 drawLines();
@@ -245,7 +292,7 @@
                 };
                 
                 var markerName = name;
-                marker.bindTooltip(markerName, {permanent: true, direction: 'top'}).openTooltip();
+                marker.bindTooltip(markerName, {permanent: false, direction: 'top'}).openTooltip();
                   // Đóng popup sau khi lưu thông tin
                marker.closePopup();
                 updateMarkerList();
@@ -312,7 +359,7 @@
                         [markers[i].data.latitude, markers[i].data.longitude]
                     );
                     var listItem = document.createElement('li');
-                    listItem.textContent = `Distance between ${markers[i - 1].data.name} and ${markers[i].data.name}: ${distance.toFixed(2)} meters`;
+                    listItem.textContent = `Khoãng cách giữa ${markers[i - 1].data.name} và ${markers[i].data.name}: ${distance.toFixed(2)} m`;
                     distanceList.appendChild(listItem);
                     markers[i].data.distanceToPrevious = distance.toFixed(2);
                 }
@@ -321,48 +368,42 @@
 
        
         //-----
-        function drawLines1() {
-            lines.forEach(line => map.removeLayer(line));
-            lines = [];
-            for (var i = 1; i < markers.length; i++) {
-                if (markers[i - 1].data && markers[i].data) {
-                    var line = L.polyline([
-                        [markers[i - 1].data.latitude, markers[i - 1].data.longitude],
-                        [markers[i].data.latitude, markers[i].data.longitude]
-                    ], {color: 'blue'}).addTo(map);
-
-                    // Add distance label to the polyline
-                    var midPoint = [
-                        (markers[i - 1].data.latitude + markers[i].data.latitude) / 2,
-                        (markers[i - 1].data.longitude + markers[i].data.longitude) / 2
-                    ];
-                    var distanceLabel = L.marker(midPoint, {
-                        icon: L.divIcon({
-                            className: 'distance-label',
-                            html: `<div style="background-color: white; padding: 2px;">${markers[i].data.distanceToPrevious} m</div>`
-                        }),
-                        interactive: false
-                    }).addTo(map);
-
-                    lines.push(line);
-                    lines.push(distanceLabel);
-                }
-            }
-        }
-//-----------
+     
+//------
 function drawLines() {
-            lines.forEach(line => map.removeLayer(line));
-            lines = [];
-            for (var i = 1; i < markers.length; i++) {
-                if (markers[i - 1].data && markers[i].data) {
-                    var line = L.polyline([
-                        [markers[i - 1].data.latitude, markers[i - 1].data.longitude],
-                        [markers[i].data.latitude, markers[i].data.longitude]
-                    ], {color: 'blue'}).addTo(map);
-                    lines.push(line);
-                }
-            }
+    // Remove existing lines from the map
+    lines.forEach(line => map.removeLayer(line));
+    lines = [];
+
+    // Iterate through markers and draw lines between consecutive markers
+    for (var i = 1; i < markers.length; i++) {
+        if (markers[i - 1].data && markers[i].data) {
+            var start = L.latLng(markers[i - 1].data.latitude, markers[i - 1].data.longitude);
+            var end = L.latLng(markers[i].data.latitude, markers[i].data.longitude);
+            var distance = start.distanceTo(end).toFixed(2); // Calculate distance in meters
+
+            var line = L.polyline([start, end], {color: 'blue'}).addTo(map);
+            lines.push(line);
+
+            // Add a tooltip to show the distance
+            var midPoint = L.latLng(
+                (start.lat + end.lat) / 2,
+                (start.lng + end.lng) / 2
+            );
+            L.tooltip({
+                permanent: false,
+                direction: 'center',
+                className: 'distance-tooltip'
+            })
+            .setContent(`${distance} m`)
+            .setLatLng(midPoint)
+            .addTo(map);
         }
+    }
+}
+
+//-----
+
   // Function to preview the uploaded image
   function previewImage(event) {
         var reader = new FileReader();
