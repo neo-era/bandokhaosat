@@ -3,282 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web GIS with Location Tracking</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <title>Khao sat-tong hop ke hoach</title>
     <style>
-        #map {
-            height: 500px;
-            width: 100%;
-        }
-        .popup-content {
+        .button-container {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-        .popup-content label {
-            margin-top: 5px;
-        }
-        .popup-content input, .popup-content textarea {
-            width: 100%;
-        }
-        .info {
-            margin-top: 20px;
+        .button-container a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <h1>Web GIS with Location Tracking and Save to Excel</h1>
-    <div id="map"></div>
-    <button onclick="saveMarkersToExcel()">Save Markers to Excel</button>
-    <div class="info">
-        <h2>Marker Information</h2>
-        <p><strong>Number of Markers Saved:</strong> <span id="marker-count">0</span></p>
-        <ul id="marker-list"></ul>
-        <h2>Distances Between Markers</h2>
-        <ul id="distance-list"></ul>
+    <h1>Tổng hợp quy trình khảo sát địa bàn Chiếu sáng khu vực Trung Tâm</h1>
+    <div class="button-container">
+        <a href="https://forms.office.com/r/142hbiHxa2?origin=lprLink">Khảo sát tăng cường đèn</a>
+        <a href="https://forms.office.com/r/FD2ASTf4Yg?origin=lprLink">Khảo sát ngầm hóa</a>
+        <a href="https://forms.office.com/r/hNVhi9dsdz?origin=lprLink">Khảo sát thay thế đèn</a>
+        <a href="form4.html">Lắp đặt - Thay thế hộp kín nước</a>
+        <a href="form5.html">Móng trụ mục - Nâng móng trụ</a>
+        <a href="form6.html">Thay dây luồn cần</a>
+        <a href="form7.html">Decal số trụ</a>
+        <a href="form8.html">Chạm cáp ngầm</a>
+        <a href="form9.html">Chạm chập nổi</a>
+       
     </div>
-
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.js"></script>
-    <script>
-        // Define Proj4js projection definitions
-        proj4.defs([
-            [
-                'EPSG:4326', // WGS84
-                '+proj=longlat +datum=WGS84 +no_defs'
-            ],
-            [
-                'EPSG:4733', // VN-2000
-                '+proj=tmerc +lat_0=0 +lon_0=105 +k=1.0 +x_0=500000 +y_0=0 +datum=WGS84 +units=m +no_defs'
-            ]
-        ]);
-
-        var map = L.map('map').setView([10.762622, 106.660172], 13); // Coordinates for Ho Chi Minh City
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        var markers = [];
-        var lines = [];
-
-        map.on('click', function(e) {
-            var marker = L.marker(e.latlng, {draggable: true}).addTo(map);
-            marker.on('dragend', function(e) {
-                updateMarkerInfo(e);
-            });
-            marker.on('click', function(e) {
-                updateMarkerInfo(e);
-            });
-            markers.push(marker);
-            updateMarkerInfo({target: marker});
-        });
-
-        function updateMarkerInfo(e) {
-            var marker = e.target;
-            var position = marker.getLatLng();
-
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${position.lat}&lon=${position.lng}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.address) {
-                        var address = data.display_name;
-                        var houseNumber = data.address.house_number || '';
-                        var street = data.address.road || '';
-                        var ward = data.address.suburb || '';
-                        var district = data.address.city_district || data.address.county || '';
-
-                        var vn2000Coords = convertToVN2000(position.lat, position.lng);
-
-                        var popupContent = `
-                            <div class="popup-content">
-                                <label>Latitude:</label>
-                                <input type="text" id="latitude" value="${position.lat}" readonly>
-                                <label>Longitude:</label>
-                                <input type="text" id="longitude" value="${position.lng}" readonly>
-                                <label>VN-2000 X:</label>
-                                <input type="text" id="vn2000-x" value="${vn2000Coords[0]}" readonly>
-                                <label>VN-2000 Y:</label>
-                                <input type="text" id="vn2000-y" value="${vn2000Coords[1]}" readonly>
-                                <label>Address:</label>
-                                <input type="text" id="address" value="${address}">
-                                <label>House Number:</label>
-                                <input type="text" id="house-number" value="${houseNumber}">
-                                <label>Street:</label>
-                                <input type="text" id="street" value="${street}">
-                                <label>Ward:</label>
-                                <input type="text" id="ward" value="${ward}">
-                                <label>District:</label>
-                                <input type="text" id="district" value="${district}">
-                                <label>Control Cabinet:</label>
-                                <input type="text" id="control-cabinet" value="Control Cabinet 1">
-                                <label>Image:</label>
-                                <input type="text" id="image" value="Image URL">
-                                <label>Notes:</label>
-                                <textarea id="notes">Sample notes</textarea>
-                                <button onclick="saveMarkerInfo(${markers.indexOf(marker)})">Save</button>
-                            </div>
-                        `;
-                        marker.bindPopup(popupContent).openPopup();
-                    } else {
-                        marker.bindPopup('Address not found').openPopup();
-                    }
-                });
-        }
-
-        function saveMarkerInfo(index) {
-            var marker = markers[index];
-            var latitude = document.getElementById('latitude').value;
-            var longitude = document.getElementById('longitude').value;
-            var vn2000X = document.getElementById('vn2000-x').value;
-            var vn2000Y = document.getElementById('vn2000-y').value;
-            var address = document.getElementById('address').value;
-            var houseNumber = document.getElementById('house-number').value;
-            var street = document.getElementById('street').value;
-            var ward = document.getElementById('ward').value;
-            var district = document.getElementById('district').value;
-            var controlCabinet = document.getElementById('control-cabinet').value;
-            var image = document.getElementById('image').value;
-            var notes = document.getElementById('notes').value;
-
-            marker.data = {
-                name: `Marker ${index + 1}`,
-                latitude,
-                longitude,
-                vn2000X,
-                vn2000Y,
-                address,
-                houseNumber,
-                street,
-                ward,
-                district,
-                controlCabinet,
-                image,
-                notes
-            };
-
-            updateMarkerList();
-            updateDistanceList();
-            drawLines();
-            console.log('Saved Information for Marker:', marker.data);
-        }
-
-        function updateMarkerList() {
-            var markerList = document.getElementById('marker-list');
-            markerList.innerHTML = '';
-            markers.forEach((marker, index) => {
-                if (marker.data) {
-                    var listItem = document.createElement('li');
-                    listItem.textContent = `${marker.data.name}: ${marker.data.address}`;
-                    markerList.appendChild(listItem);
-                }
-            });
-            document.getElementById('marker-count').textContent = markers.filter(marker => marker.data).length;
-        }
-
-        function updateDistanceList() {
-            var distanceList = document.getElementById('distance-list');
-            distanceList.innerHTML = '';
-            for (var i = 1; i < markers.length; i++) {
-                if (markers[i - 1].data && markers[i].data) {
-                    var distance = map.distance(
-                        [markers[i - 1].data.latitude, markers[i - 1].data.longitude],
-                        [markers[i].data.latitude, markers[i].data.longitude]
-                    );
-                    var listItem = document.createElement('li');
-                    listItem.textContent = `Distance between ${markers[i - 1].data.name} and ${markers[i].data.name}: ${distance.toFixed(2)} m`;
-                    distanceList.appendChild(listItem);
-                    markers[i].data.distanceToPrevious = distance.toFixed(2);
-                }
-            }
-        }
-
-        function drawLines1() {
-            lines.forEach(line => map.removeLayer(line));
-            lines = [];
-            for (var i = 1; i < markers.length; i++) {
-                if (markers[i - 1].data && markers[i].data) {
-                    var line = L.polyline([
-                        [markers[i - 1].data.latitude, markers[i - 1].data.longitude],
-                        [markers[i].data.latitude, markers[i].data.longitude]
-                    ], {color: 'blue'}).addTo(map);
-                    lines.push(line);
-                }
-            }
-        }
-        function drawLines() {
-            lines.forEach(line => map.removeLayer(line));
-            lines = [];
-            for (var i = 1; i < markers.length; i++) {
-                if (markers[i - 1].data && markers[i].data) {
-                    var line = L.polyline([
-                        [markers[i - 1].data.latitude, markers[i - 1].data.longitude],
-                        [markers[i].data.latitude, markers[i].data.longitude]
-                    ], {color: 'blue'}).addTo(map);
-
-                    // Add distance label to the polyline
-                    var midPoint = [
-                        (markers[i - 1].data.latitude + markers[i].data.latitude) / 2,
-                        (markers[i - 1].data.longitude + markers[i].data.longitude) / 2
-                    ];
-                  
-
-//---------
-
-                        var distanceLabel = L.divIcon({
-                            className: 'custom-label',
-                            html: `<div>${name}</div>`,
-                            iconSize: [100, 20],
-                            iconAnchor: [15, 25]
-                        });
-                        L.marker(midPoint, {icon: distanceLabel}).addTo(map);
-                    
-//----------
-
-                    lines.push(line);
-                    lines.push(distanceLabel);
-                }
-            }
-        }
-        function saveMarkersToExcel() {
-            var wb = XLSX.utils.book_new();
-            var ws_data
-            var ws_data = [['Name', 'Latitude', 'Longitude', 'VN-2000 X', 'VN-2000 Y', 'Address', 'House Number', 'Street', 'Ward', 'District', 'Control Cabinet', 'Image', 'Notes', 'Distance to Previous Marker (meters)']];
-
-markers.forEach(marker => {
-    if (marker.data) {
-        ws_data.push([
-            marker.data.name,
-            marker.data.latitude,
-            marker.data.longitude,
-            marker.data.vn2000X,
-            marker.data.vn2000Y,
-            marker.data.address,
-            marker.data.houseNumber,
-            marker.data.street,
-            marker.data.ward,
-            marker.data.district,
-            marker.data.controlCabinet,
-            marker.data.image,
-            marker.data.notes,
-            marker.data.distanceToPrevious || ''
-        ]);
-    }
-});
-
-var ws = XLSX.utils.aoa_to_sheet(ws_data);
-XLSX.utils.book_append_sheet(wb, ws, 'Markers');
-
-// Save to OneDrive (this requires OneDrive API integration)
-// For demonstration, we will save the file locally
-XLSX.writeFile(wb, 'Markers.xlsx');
-}
-
-// Function to convert WGS84 coordinates to VN-2000
-function convertToVN2000(lat, lng) {
-// Convert coordinates from WGS84 to VN-2000 using Proj4js
-return proj4('EPSG:4326', 'EPSG:4733', [lng, lat]);
-}
-</script>
+    <h2>Tổng hợp kết quả khảo sát</h2>
+    <div class="button-container">
+        <a href="https://forms.office.com/r/142hbiHxa2?origin=lprLink">Khảo sát tăng cường đèn</a>
+        <a href="https://forms.office.com/r/FD2ASTf4Yg?origin=lprLink">Khảo sát ngầm hóa</a>
+        <a href="https://forms.office.com/r/hNVhi9dsdz?origin=lprLink">Khảo sát thay thế đèn</a>
+        <a href="form4.html">Lắp đặt - Thay thế hộp kín nước</a>
+        <a href="form5.html">Móng trụ mục - Nâng móng trụ</a>
+        <a href="form6.html">Thay dây luồn cần</a>
+        <a href="form7.html">Decal số trụ</a>
+        <a href="form8.html">Chạm cáp ngầm</a>
+        <a href="form9.html">Chạm chập nổi</a>
+       
+    </div>
 </body>
 </html>
