@@ -98,7 +98,6 @@ h1 {
             <option value="index.html">Trang khảo sát</option>
             <option value="bamgis.html">Cập nhật GIS</option>
             <option value="quan1.html">Quận 1</option>
-            <option value="quan2.html">Quận 2</option>
             <option value="quan3.html">Quận 3</option>
             <option value="quan5.html">Quận 5</option>
             <option value="quan8.html">Quận 8</option>
@@ -381,10 +380,10 @@ function centerOnUserLocation() {
             }
         }
         function loadDefaultFile(map) {
-            fetch('data/khaosat.xlsx')
+            fetch('data/quan2.xlsx')
                 .then(response => response.blob())
                 .then(blob => {
-                    var file = new File([blob], 'data/khaosat.xlsx');
+                    var file = new File([blob], 'data/quan2.xlsx');
                     processFile(file, map);
                 })
                 .catch(error => displayError('Error loading default file: ' + error.message));
