@@ -284,13 +284,13 @@ h1 {
                     
                     var popupContent = 
                     `<div>
-                    <strong>Tên trụ: ${name}</strong>
+                    <strong>Tên tủ: ${name}</strong>
                     </div>
                     <div>Lat: ${lat}</div>
                     <div>Lon: ${lon}</div>
-                    <div>Trụ: ${loaitru}</div>
-                    <div>Tủ: ${tudieukhien}</div>
-                    <div>Đèn: ${loaiden}</div>`;
+                    <div>Địa chỉ: ${loaitru}</div>
+                    <div> Loại tủ: ${tudieukhien}</div>
+                    <div>Ghi chú: ${loaiden}</div>`;
                     marker.bindPopup(popupContent);
                     markersCluster.addLayer(marker)
                     markers.push({lat: lat, lon: lon, name: name, marker: marker});
