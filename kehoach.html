@@ -266,13 +266,101 @@
         </div>
 
         <!-- 3. Khác -->
-        <h2 class="section-title mt-5"><i class="bi bi-three-dots-vertical"></i> 3. Khác</h2>
+        <h2 class="section-title mt-5"><i class="bi bi-three-dots-vertical"></i> 3. Khác (building)</h2>
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
             <div class="col"><a href="#" class="text-decoration-none"><div class="card"><div class="card-body text-center"><i class="bi bi-calendar-check fs-1 text-primary mb-2"></i><p class="mb-0 fw-medium">Xin nghỉ phép</p></div></div></a></div>
             <div class="col"><a href="#" class="text-decoration-none"><div class="card"><div class="card-body text-center"><i class="bi bi-search fs-1 text-info mb-2"></i><p class="mb-0 fw-medium">Tra cứu thông tin</p></div></div></a></div>
             <div class="col"><a href="#" class="text-decoration-none"><div class="card"><div class="card-body text-center"><i class="bi bi-file-text fs-1 text-warning mb-2"></i><p class="mb-0 fw-medium">Cập nhật quy trình ISO</p></div></div></a></div>
-            <div class="col"><a href="#" class="text-decoration-none"><div class="card"><div class="card-body text-center"><i class="bi bi-newspaper fs-1 text-danger mb-2"></i><p class="mb-0 fw-medium">Thông tư - Nghị định mới</p></div></div></a></div>
-            <div class="col"><a href="#" class="text-decoration-none"><div class="card"><div class="card-body text-center"><i class="bi bi-book fs-1 text-success mb-2"></i><p class="mb-0 fw-medium">Kiến thức chuyên môn</p></div></div></a></div>
+<!-- Trong phần 3. Khác -->
+<div class="col">
+    <a href="#" data-bs-toggle="modal" data-bs-target="#modalThongTu" class="text-decoration-none">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-newspaper fs-1 text-danger mb-2"></i>
+                <p class="mb-0 fw-medium">Thông tư - Nghị định mới</p>
+            </div>
+        </div>
+    </a>
+</div>
+            <div class="col">
+                <a href="#" data-bs-toggle="modal" data-bs-target="#modalAI" class="text-decoration-none">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <i class="bi bi-book fs-1 text-success mb-2"></i>
+                            <p class="mb-0 fw-medium">Kiến thức chuyên môn</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Modal Kiến thức chuyên môn - Công cụ AI -->
+        <div class="modal fade" id="modalAI" tabindex="-1" aria-labelledby="modalAILabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="modalAILabel">
+                            <i class="bi bi-cpu"></i> Công cụ AI phổ biến
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>ChatGPT (OpenAI)</span>
+                                <a href="https://chat.openai.com/" target="_blank" class="btn btn-sm btn-outline-primary">Truy cập</a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Google Gemini (Bard)</span>
+                                <a href="https://gemini.google.com/" target="_blank" class="btn btn-sm btn-outline-success">Truy cập</a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Microsoft Copilot</span>
+                                <a href="https://copilot.microsoft.com/" target="_blank" class="btn btn-sm btn-outline-info">Truy cập</a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Claude AI (Anthropic)</span>
+                                <a href="https://claude.ai/" target="_blank" class="btn btn-sm btn-outline-warning">Truy cập</a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Perplexity AI</span>
+                                <a href="https://www.perplexity.ai/" target="_blank" class="btn btn-sm btn-outline-secondary">Truy cập</a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Poe.com (Tổng hợp AI)</span>
+                                <a href="https://poe.com/" target="_blank" class="btn btn-sm btn-outline-dark">Truy cập</a>
+                            </li>
+                            <!-- Công cụ dựng phim, tạo clip, chuyển văn bản thành giọng nói -->
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>CapCut (Dựng video AI)</span>
+                                <a href="https://www.capcut.com/vi-vn/ai-tools" target="_blank" class="btn btn-sm btn-outline-success">Truy cập</a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Descript (Dựng video, chuyển văn bản thành giọng nói)</span>
+                                <a href="https://www.descript.com/" target="_blank" class="btn btn-sm btn-outline-primary">Truy cập</a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>Lumen5 (Tạo video từ văn bản)</span>
+                                <a href="https://www.lumen5.com/" target="_blank" class="btn btn-sm btn-outline-info">Truy cập</a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>HeyGen (Tạo video AI, avatar nói chuyện)</span>
+                                <a href="https://www.heygen.com/" target="_blank" class="btn btn-sm btn-outline-warning">Truy cập</a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>ElevenLabs (Chuyển văn bản thành giọng nói)</span>
+                                <a href="https://elevenlabs.io/" target="_blank" class="btn btn-sm btn-outline-danger">Truy cập</a>
+                            </li>
+                        </ul>
+                        <div class="alert alert-info mt-3 mb-0"><i class="bi bi-info-circle"></i> Danh sách trên gồm các công cụ AI hỗ trợ hỏi đáp, sáng tạo nội dung, lập trình, dịch thuật, dựng phim, tạo clip, chuyển văn bản thành giọng nói...</div>
+                    </div>
+                    <div class="modal-footer">
+                        <small class="text-muted">Cập nhật lần cuối: 21/04/2026</small>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         </div>
 
     </div>
@@ -280,10 +368,63 @@
     <footer class="py-4 text-center">
         <div class="container">
             <p class="mb-1">&copy; 2026 Chiếu sáng khu vực Trung Tâm - CSCCTPHCM</p>
-            <small>Ver 1.1 • Hỗ trợ đội ngũ khảo sát</small>
+            <small>Phiên bản Bootstrap 5 • Hỗ trợ đội ngũ khảo sát</small>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Modal Thông tư - Nghị định -->
+<div class="modal fade" id="modalThongTu" tabindex="-1" aria-labelledby="modalThongTuLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalThongTuLabel">
+                    <i class="bi bi-newspaper"></i> Thông tư & Nghị định mới nhất
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" id="searchVanBan" class="form-control" placeholder="Tìm kiếm thông tư, nghị định...">
+                    <button class="btn btn-outline-secondary" type="button"><i class="bi bi-search"></i></button>
+                </div>
+
+                <!-- Danh sách link tới các website văn bản pháp luật -->
+                <ul id="listVanBan" class="list-group mb-3">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Cổng thông tin điện tử Đảng Cộng sản Việt Nam</span>
+                        <a href="https://dangcongsan.vn/van-ban" target="_blank" class="btn btn-sm btn-outline-danger">Truy cập</a>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Cổng thông tin điện tử Chính phủ</span>
+                        <a href="https://vanban.chinhphu.vn/" target="_blank" class="btn btn-sm btn-outline-success">Truy cập</a>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Cơ sở dữ liệu quốc gia về văn bản pháp luật</span>
+                        <a href="https://vbpl.vn/" target="_blank" class="btn btn-sm btn-outline-primary">Truy cập</a>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>Bộ Xây dựng - Văn bản pháp luật</span>
+                        <a href="https://phapdien.moc.gov.vn/" target="_blank" class="btn btn-sm btn-outline-secondary">Truy cập</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <small class="text-muted">Cập nhật lần cuối: 21/04/2026</small>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('searchVanBan').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let items = document.querySelectorAll('#listVanBan li');
+        items.forEach(item => {
+            let text = item.textContent.toLowerCase();
+            item.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+</script>
 </body>
 </html>
