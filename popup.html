@@ -271,7 +271,17 @@
             <div class="col"><a href="#" class="text-decoration-none"><div class="card"><div class="card-body text-center"><i class="bi bi-calendar-check fs-1 text-primary mb-2"></i><p class="mb-0 fw-medium">Xin nghỉ phép</p></div></div></a></div>
             <div class="col"><a href="#" class="text-decoration-none"><div class="card"><div class="card-body text-center"><i class="bi bi-search fs-1 text-info mb-2"></i><p class="mb-0 fw-medium">Tra cứu thông tin</p></div></div></a></div>
             <div class="col"><a href="#" class="text-decoration-none"><div class="card"><div class="card-body text-center"><i class="bi bi-file-text fs-1 text-warning mb-2"></i><p class="mb-0 fw-medium">Cập nhật quy trình ISO</p></div></div></a></div>
-            <div class="col"><a href="#" class="text-decoration-none"><div class="card"><div class="card-body text-center"><i class="bi bi-newspaper fs-1 text-danger mb-2"></i><p class="mb-0 fw-medium">Thông tư - Nghị định mới</p></div></div></a></div>
+<!-- Trong phần 3. Khác -->
+<div class="col">
+    <a href="#" data-bs-toggle="modal" data-bs-target="#modalThongTu" class="text-decoration-none">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="bi bi-newspaper fs-1 text-danger mb-2"></i>
+                <p class="mb-0 fw-medium">Thông tư - Nghị định mới</p>
+            </div>
+        </div>
+    </a>
+</div>
             <div class="col"><a href="#" class="text-decoration-none"><div class="card"><div class="card-body text-center"><i class="bi bi-book fs-1 text-success mb-2"></i><p class="mb-0 fw-medium">Kiến thức chuyên môn</p></div></div></a></div>
         </div>
 
@@ -285,5 +295,43 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Modal Thông tư - Nghị định -->
+<div class="modal fade" id="modalThongTu" tabindex="-1" aria-labelledby="modalThongTuLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalThongTuLabel">
+                    <i class="bi bi-newspaper"></i> Thông tư & Nghị định mới nhất
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <input type="text" id="searchVanBan" class="form-control" placeholder="Tìm kiếm thông tư, nghị định...">
+                    <button class="btn btn-outline-secondary" type="button"><i class="bi bi-search"></i></button>
+                </div>
+
+                <!-- Nhúng SharePoint folder bằng iframe -->
+                <div style="height:600px;width:100%;border:1px solid #eee;overflow:hidden;border-radius:8px;">
+                    <iframe src="https://cscctphcm.sharepoint.com/:w:/s/Chieusangkhuvuctrungtam/IQA1cO2j1E70Ro5zdDTygjTnAUO2i3engpivG0BPtLqLHEQ?e=Ax6ULV" width="100%" height="100%" style="border:none;min-height:600px;" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <small class="text-muted">Cập nhật lần cuối: 21/04/2026</small>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('searchVanBan').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let items = document.querySelectorAll('#listVanBan li');
+        items.forEach(item => {
+            let text = item.textContent.toLowerCase();
+            item.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+</script>
 </body>
 </html>
